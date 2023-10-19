@@ -1,0 +1,8 @@
+- name: Include masters
+  ansible.builtin.include_tasks: master.yml
+
+- name: Include workers
+  ansible.builtin.include_tasks: worker.yml
+
+- name: Include machine config
+  ansible.builtin.include_tasks: mc.yml

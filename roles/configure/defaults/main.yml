@@ -1,0 +1,11 @@
+configure_hardware_version: "{{ vpshere_upi_hardware_version | default('VMX_17') }}"
+
+configure_datacenter: "{{ vsphere_upi_datacenter }}"
+configure_cluster: "{{ vsphere_upi_cluster }}"
+configure_datastore: "{{ vsphere_upi_datastore }}"
+configure_network: "{{ vsphere_upi_network }}"
+configure_folder: "{{ vsphere_upi_folder }}"
+
+configure_master_mib: "{{ vpshere_upi_master_mib | default(16384) }}"
+configure_master_cpu_count: "{{ vsphere_upi_master_cpu_count | default(4) }}"
+configure_master_cpu_cps: "{{ vsphere_upi_master_cpu_cps | default(2) }}"

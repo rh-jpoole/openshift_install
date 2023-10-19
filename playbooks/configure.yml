@@ -1,0 +1,12 @@
+---
+- name: Deploy the Openshift
+  hosts: openshift
+  gather_facts: true
+  environment:
+    VMWARE_HOST: "{{ vsphere_upi_host }}"
+    VMWARE_PASSWORD: "{{ vsphere_upi_password }}" 
+    VMWARE_USER: "{{ vsphere_upi_username }}"
+    VMWARE_VALIDATE_CERTS: "false"
+  roles:
+    - role: configure
+

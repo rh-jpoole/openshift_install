@@ -1,0 +1,75 @@
+- name: Configure a zone for cluster
+  infoblox.nios_modules.nios_zone:
+    name: "{{ vsphere_upi_cluster_name }}.{{ vsphere_upi_base_domain }}"
+    grid_primary:
+      - name: "{{ dns_primary_grid }}"
+    restart_if_needed: true
+    state: present
+    provider:
+      host: "{{ dns_provider_host }}"
+      username: "{{ dns_provider_username }}"
+      password: "{{ dns_provider_password }}"
+
+- name: Configure an A record for machines
+  infoblox.nios_modules.nios_a_record:
+    name: "{{ item.name }}.{{ vsphere_upi_cluster_name }}.{{ vsphere_upi_base_domain }}"
+    ipv4: "{{ item.ipaddr }}"
+    state: present
+    provider:
+      host: "{{ dns_provider_host }}"
+      username: "{{ dns_provider_username }}"
+      password: "{{ dns_provider_password }}"
+  loop: "{{ vsphere_upi_nodes }}"
+
+- name: Configure an A record for etcd
+  infoblox.nios_modules.nios_a_record:
+    name: "etcd-{{ my_idx }}.{{ vsphere_upi_cluster_name }}.{{ vsphere_upi_base_domain }}"
+    ipv4: "{{ item.ipaddr }}"
+    state: present
+    provider:
+      host: "{{ dns_provider_host }}"
+      username: "{{ dns_provider_username }}"
+      password: "{{ dns_provider_password }}"
+  loop: "{{ vsphere_upi_nodes }}"
+  loop_control:
+    index_var: my_idx
+
+- name: Configure an A record for virtualIP api
+  infoblox.nios_modules.nios_a_record:
+    name: "{{ item }}.{{ vsphere_upi_cluster_name }}.{{ vsphere_upi_base_domain }}"
+    ipv4: "{{ vsphere_upi_api_vip }}"
+    state: present
+    provider:
+      host: "{{ dns_provider_host }}"
+      username: "{{ dns_provider_username }}"
+      password: "{{ dns_provider_password }}"
+  loop:
+    - "api"
+    - "api-int"
+
+- name: Configure an A record for virtualIP ingress
+  infoblox.nios_modules.nios_a_record:
+    name: "*.apps.{{ vsphere_upi_cluster_name }}.{{ vsphere_upi_base_domain }}"
+    ipv4: "{{ vsphere_upi_ingress_vip }}"
+    state: present
+    provider:
+      host: "{{ dns_provider_host }}"
+      username: "{{ dns_provider_username }}"
+      password: "{{ dns_provider_password }}"
+
+- name: Configure an SRV records
+  infoblox.nios_modules.nios_srv_record:
+    name: "_etcd-server-ssl._tcp.{{ vsphere_upi_cluster_name }}.{{ vsphere_upi_base_domain }}"
+    target: "{{ item }}.{{ vsphere_upi_cluster_name }}.{{ vsphere_upi_base_domain }}"
+    state: present
+    priority: 0
+    weight: 10
+    port: 2380
+    provider:
+      host: "{{ dns_provider_host }}"
+      username: "{{ dns_provider_username }}"
+      password: "{{ dns_provider_password }}"
+  loop:
+    - "etcd-0"
+    - "etcd-1"
+    - "etcd-2"

@@ -1,0 +1,90 @@
+- name: Create the cluster folder on webserver
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.{{ vsphere_upi_cluster_name }}"
+    state: directory
+
+- name: Generate install-config.yaml
+  ansible.builtin.template:
+    src: install-config.yaml.j2
+    dest: "{{ ansible_env.HOME }}/.{{ vsphere_upi_cluster_name }}/install-config.yaml"
+    mode: "0644"
+
+- name: Generate agent-config.yaml
+  ansible.builtin.template:
+    src: agent-config.yaml.j2
+    dest: "{{ ansible_env.HOME }}/.{{ vsphere_upi_cluster_name }}/agent-config.yaml"
+    mode: "0644"
+
+- name: Check if ISO already exists
+  ansible.builtin.stat:
+    name: "{{ ansible_env.HOME }}/.{{ vsphere_upi_cluster_name }}/agent.x86_64.iso"
+  register: iso_file
+
+- name: Create ISO image
+  ansible.builtin.command: "openshift-install agent create image --dir={{ ansible_env.HOME }}/.{{ vsphere_upi_cluster_name }}"
+  when: not iso_file.stat.exists
+
+- name: Copy ISO file to datastore
+  community.vmware.vsphere_copy:
+    src: "{{ ansible_env.HOME }}/.{{ vsphere_upi_cluster_name }}/agent.x86_64.iso"
+    datacenter: "{{ configure_datacenter }}"
+    datastore: "{{ configure_datastore }}"
+    path: "ISO/{{ vsphere_upi_cluster_name }}-boot-iso.iso"
+
+- name: set connection info
+  ansible.builtin.set_fact:
+    connection_args:
+        vcenter_hostname: "{{ vsphere_upi_host }}"
+        vcenter_username: "{{ vsphere_upi_username }}"
+        vcenter_password: "{{ vsphere_upi_password }}"
+        vcenter_validate_certs: "false"
+
+- name: Create master VMs
+  vmware.vmware_rest.vcenter_vm:
+    placement:
+      cluster: "{{ lookup('vmware.vmware_rest.cluster_moid', '/{{ configure_datacenter }}/host/{{ configure_cluster }}', **connection_args) }}"
+      datastore: "{{ lookup('vmware.vmware_rest.datastore_moid', '/{{ configure_datacenter }}/datastore/{{  configure_datastore }}', **connection_args) }}"
+      folder: "{{ lookup('vmware.vmware_rest.folder_moid', '/{{ configure_datacenter }}/omachace', **connection_args) }}"
+    name: "{{ item.name }}"
+    guest_OS: RHEL_8_64
+    hardware_version: "{{ configure_hardware_version }}"
+    memory:
+      hot_add_enabled: true
+      size_MiB: "{{ configure_master_mib }}"
+    cpu:
+      count: "{{ configure_master_cpu_count }}"
+      cores_per_socket: "{{ configure_master_cpu_cps }}"
+    disks:
+    - type: SATA
+      new_vmdk:
+        name: "{{ vsphere_upi_nodes[0].name }}_disk1"
+        capacity: 120000000000
+    cdroms:
+    - type: SATA
+      start_connected: true
+      backing:
+        type: ISO_FILE
+        iso_file: "[{{ configure_datastore }}] ISO/{{ vsphere_upi_cluster_name }}-boot-iso.iso"
+      sata:
+        bus: 0
+        unit: 2
+    nics:
+    - mac_type: MANUAL
+      start_connected: true
+      mac_address: "{{ item.macaddr }}"
+      backing:
+        type: DISTRIBUTED_PORTGROUP
+        network: "{{ lookup('vmware.vmware_rest.network_moid', '/{{ configure_datacenter }}/network/{{ configure_network }}', **connection_args) }}"
+    power_on: true
+  loop: "{{ vsphere_upi_nodes }}"
+  register: master_vms
+
+- name: Start VMs
+  community.vmware.vmware_guest:
+    datacenter: "{{ configure_datacenter }}"
+    name: "{{ item.name }}"
+    state: poweredon
+  loop: "{{ vsphere_upi_nodes }}"
+
+- name: Wait for install
+  ansible.builtin.command: "openshift-install agent wait-for install-complete --dir={{ ansible_env.HOME }}/.{{ vsphere_upi_cluster_name }}"

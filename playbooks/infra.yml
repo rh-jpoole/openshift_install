@@ -1,0 +1,6 @@
+- hosts: openshift
+  gather_facts: false
+
+  roles:
+    - dns
+    - load_balancer

@@ -1,0 +1,18 @@
+---
+- name: Deploy the Openshift
+  hosts: localhost
+  gather_facts: true
+  environment:
+    GOVC_USERNAME: "{{ vcenter.username }}"
+    GOVC_PASSWORD: "{{ vcenter.password }}"
+    GOVC_URL: "https://{{ vcenter.ip }}"
+    GOVC_DATACENTER: "{{ vcenter.datacenter }}"
+    GOVC_INSECURE: "1"
+  roles:
+    - role: dns
+      when: dns_provider is defined
+    - role: load_balancer
+      when: load_balancer_provider is defined
+    - role: configure
+    - role: install
+
