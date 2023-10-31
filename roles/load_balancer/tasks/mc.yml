@@ -13,7 +13,7 @@
 - name: mc | Add pool member to backend-machine-config-server
   f5networks.f5_modules.bigip_pool_member:
     pool: "{{ vsphere_upi_cluster_name }}-backend-machine-config-server"
-    name: "{{ item.name }}"
+    name: "{{ item.name }}-{{ vsphere_upi_cluster_name }}"
     host: "{{ item.ipaddr }}"
     port: 22623
     provider:

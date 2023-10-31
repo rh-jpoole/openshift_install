@@ -19,7 +19,7 @@ hosts:
             enabled: true
             address:
               - ip: {{ node.ipaddr }}
-                prefix-length: 28
+                prefix-length: 22
             dhcp: false
       dns-resolver:
         config:
@@ -28,7 +28,7 @@ hosts:
       routes:
         config:
           - destination: 0.0.0.0/0
-            next-hop-address: 10.1.198.206
+            next-hop-address: 10.1.195.254
             next-hop-interface: ens160
             table-id: 254
 {% endfor %}

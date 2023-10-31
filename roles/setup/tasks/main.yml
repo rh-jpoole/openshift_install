@@ -1,0 +1,27 @@
+- name: vars | Set product version
+  ansible.builtin.set_fact:
+    __product_release_version: "{{ config.cluster_version | product_release_version }}"
+    __family: "{{ 'mac' if ansible_os_family == 'Darwin' else 'linux' }}"
+
+- name: vars | Set the download facts openshift binaries
+  ansible.builtin.set_fact:
+    __openshift_client: "{{ clients_url }}/openshift-client-{{ __family }}-{{ __product_release_version }}.tar.gz"
+    __openshift_install: "{{ clients_url }}/openshift-install-{{ __family }}-{{ __product_release_version }}.tar.gz"
+
+- name: Create ssh keys
+  ansible.builtin.include_tasks: ssh.yml
+  when: installer_ssh_key is not defined
+
+- name: Include dependencies
+  ansible.builtin.include_tasks: dependencies.yml
+
+- name: Include binaries
+  ansible.builtin.include_tasks: binaries.yml
+
+- name: Include manifests
+  ansible.builtin.include_tasks: manifests.yml
+
+- name: Setup ISO file
+  ansible.builtin.include_role:
+    name: node_isos
+  when: use_iso | default(false) and not dhcp | default(false)

@@ -22,6 +22,8 @@
 
 - name: Create ISO image
   ansible.builtin.command: "openshift-install agent create image --dir={{ ansible_env.HOME }}/.{{ vsphere_upi_cluster_name }}"
+  environment:
+    OPENSHIFT_INSTALL_RELEASE_IMAGE_OVERRIDE: quay.io/openshift-release-dev/ocp-release:4.12.41-x86_64
   when: not iso_file.stat.exists
 
 - name: Copy ISO file to datastore
@@ -45,7 +47,7 @@
       cluster: "{{ lookup('vmware.vmware_rest.cluster_moid', '/{{ configure_datacenter }}/host/{{ configure_cluster }}', **connection_args) }}"
       datastore: "{{ lookup('vmware.vmware_rest.datastore_moid', '/{{ configure_datacenter }}/datastore/{{  configure_datastore }}', **connection_args) }}"
       folder: "{{ lookup('vmware.vmware_rest.folder_moid', '/{{ configure_datacenter }}/omachace', **connection_args) }}"
-    name: "{{ item.name }}"
+    name: "{{ vsphere_upi_cluster_name }}-{{ item.name }}"
     guest_OS: RHEL_8_64
     hardware_version: "{{ configure_hardware_version }}"
     memory:
@@ -82,7 +84,7 @@
 - name: Start VMs
   community.vmware.vmware_guest:
     datacenter: "{{ configure_datacenter }}"
-    name: "{{ item.name }}"
+    name: "{{ vsphere_upi_cluster_name }}-{{ item.name }}"
     state: poweredon
   loop: "{{ vsphere_upi_nodes }}"
 

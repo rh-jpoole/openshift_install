@@ -13,22 +13,16 @@ controlPlane:
 metadata:
   name: {{ vsphere_upi_cluster_name }}
 networking:
-  clusterNetwork:
-  - cidr: 10.128.0.0/14
-    hostPrefix: 23
+  networkType: OpenShiftSDN
   machineNetwork:
-  - cidr: 10.1.192.0/22
-  networkType: OVNKubernetes
-  serviceNetwork:
-  - 172.30.0.0/16
+    - cidr: 10.1.192.0/22
 platform:
-  baremetal:
-    hosts:
-{% for node in vsphere_upi_nodes %}
-      - name: vm{{ loop.index0 }}
-        role: master
-{% endfor %}
-    apiVIP: "{{ vsphere_upi_api_vip }}"
-    ingressVIP: "{{ vsphere_upi_ingress_vip }}"
+  vsphere:
+    vcenter: {{ vsphere_upi_host }}
+    username: {{ vsphere_upi_username }}
+    password: {{ vsphere_upi_password }}
+    datacenter: {{ vsphere_upi_datacenter }}
+    defaultDatastore: {{ vsphere_upi_datastore }}
+    folder: {{ vsphere_upi_folder }}
 pullSecret: '{{ pull_secret }}'
 sshKey: '{{ ssh_key }}'

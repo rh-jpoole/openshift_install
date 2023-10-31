@@ -1,0 +1,5 @@
+- name: dependencies | Install the necessary linux packages which will be needed later in the ansible run
+  ansible.builtin.package:
+    name:
+      - nmstate
+  become: true
