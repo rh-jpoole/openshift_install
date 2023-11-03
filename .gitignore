@@ -1,3 +1,4 @@
 .vscode
 .hypothesis
 *tar.gz
+*pyc
