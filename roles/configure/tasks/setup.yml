@@ -1,0 +1,103 @@
+- name: set connection info
+  ansible.builtin.set_fact:
+    connection_args:
+        vcenter_hostname: "{{ openshift_install_vsphere_host }}"
+        vcenter_username: "{{ openshift_install_vsphere_username }}"
+        vcenter_password: "{{ openshift_install_vsphere_password }}"
+        vcenter_validate_certs: "false"
+
+- name: Create master VMs
+  vmware.vmware_rest.vcenter_vm:
+    placement:
+      cluster: "{{ lookup('vmware.vmware_rest.cluster_moid', '/{{ configure_datacenter }}/host/{{ configure_cluster }}', **connection_args) }}"
+      datastore: "{{ lookup('vmware.vmware_rest.datastore_moid', '/{{ configure_datacenter }}/datastore/{{  configure_datastore }}', **connection_args) }}"
+      folder: "{{ lookup('vmware.vmware_rest.folder_moid', '/{{ configure_datacenter }}/omachace', **connection_args) }}"
+    name: "{{ openshift_install_cluster_name }}-{{ item.name }}"
+    guest_OS: RHEL_8_64
+    hardware_version: "{{ configure_hardware_version }}"
+    memory:
+      hot_add_enabled: true
+      size_MiB: "{{ configure_master_mib }}"
+    cpu:
+      count: "{{ configure_master_cpu_count }}"
+      cores_per_socket: "{{ configure_master_cpu_cps }}"
+    disks:
+    - type: SATA
+      new_vmdk:
+        name: "{{ openshift_install_nodes[0].name }}_disk1"
+        capacity: 120000000000
+    cdroms:
+    - type: SATA
+      start_connected: true
+      backing:
+        type: ISO_FILE
+        iso_file: "[{{ configure_datastore }}] ISO/{{ openshift_install_cluster_name }}-boot-iso.iso"
+      sata:
+        bus: 0
+        unit: 2
+    nics:
+    - mac_type: "{{ 'MANUAL' if item.macaddr is defined else 'GENERATED' }}"
+      start_connected: true
+      mac_address: "{{ item.macaddr | default(omit) }}"
+      backing:
+        type: DISTRIBUTED_PORTGROUP
+        network: "{{ lookup('vmware.vmware_rest.network_moid', '/{{ configure_datacenter }}/network/{{ configure_network_name }}', **connection_args) }}"
+    power_on: true
+  loop: "{{ openshift_install_nodes }}"
+
+- name: Fetch VMs MAC addresses
+  ansible.builtin.set_fact:
+    openshift_install_nodes: "{{ openshift_install_nodes | machacekondra.openshift_install.fetch_macaddrs(cl_name=openshift_install_cluster_name, **connection_args) }}"
+
+################################################################################################################################################################################
+
+- name: Create the cluster folder
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.{{ openshift_install_cluster_name }}"
+    state: directory
+
+- name: Create the manifests folder
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.{{ openshift_install_cluster_name }}/manifests"
+    state: directory
+
+- name: Copy the openshift-gitops manifest
+  ansible.builtin.copy:
+    src: gitops-subscription.yml
+    dest: "{{ ansible_env.HOME }}/.{{ openshift_install_cluster_name }}/manifests"
+
+- name: Generate install-config.yaml
+  ansible.builtin.template:
+    src: install-config.yaml.j2
+    dest: "{{ ansible_env.HOME }}/.{{ openshift_install_cluster_name }}/install-config.yaml"
+    mode: "0644"
+  vars:
+    __master_nodes_len: "{{ openshift_install_nodes | machacekondra.openshift_install.master_nodes_len }}"
+    __worker_nodes_len: "{{ openshift_install_nodes | machacekondra.openshift_install.worker_nodes_len }}"
+
+- name: Generate agent-config.yaml
+  ansible.builtin.template:
+    src: agent-config.yaml.j2
+    dest: "{{ ansible_env.HOME }}/.{{ openshift_install_cluster_name }}/agent-config.yaml"
+    mode: "0644"
+  vars:
+    __network_prefix: "{{ openshift_install_network | ansible.utils.ipaddr('prefix') }}"
+
+- name: Check if ISO already exists
+  ansible.builtin.stat:
+    name: "{{ ansible_env.HOME }}/.{{ openshift_install_cluster_name }}/agent.x86_64.iso"
+  register: iso_file
+
+- name: Create ISO image
+  ansible.builtin.command: "openshift-install agent create image --dir={{ ansible_env.HOME }}/.{{ openshift_install_cluster_name }}"
+  environment:
+    OPENSHIFT_INSTALL_RELEASE_IMAGE_OVERRIDE: quay.io/openshift-release-dev/ocp-release:4.12.41-x86_64
+  when: not iso_file.stat.exists
+
+## FIXME: no community modules
+- name: Copy ISO file to datastore
+  community.vmware.vsphere_copy:
+    src: "{{ ansible_env.HOME }}/.{{ openshift_install_cluster_name }}/agent.x86_64.iso"
+    datacenter: "{{ configure_datacenter }}"
+    datastore: "{{ configure_datastore }}"
+    path: "ISO/{{ openshift_install_cluster_name }}-boot-iso.iso"

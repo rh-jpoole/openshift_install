@@ -1,0 +1,20 @@
+- name: Configure an ipv4 dhcp fixed address
+  infoblox.nios_modules.nios_fixed_address:
+    name: "{{ item.name }}.{{ dns_zone }}"
+    mac: "{{ item.macaddr }}"
+    network: "{{ configure_network }}"
+    ipaddr: "{{ item.ipaddr }}"
+    state: present
+    provider:
+      host: "{{ configure_dns_provider_host }}"
+      username: "{{ configure_dns_provider_username }}"
+      password: "{{ configure_dns_provider_password }}"
+  loop: "{{ openshift_install_nodes }}"
+  when: "configure_dhcp and configure_dhcp_reservation"
+
+- name: Restart all grid services if needed.
+  infoblox.nios_modules.nios_restartservices:
+    provider:
+      host: "{{ configure_dns_provider_host }}"
+      username: "{{ configure_dns_provider_username }}"
+      password: "{{ configure_dns_provider_password }}"

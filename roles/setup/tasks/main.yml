@@ -17,11 +17,3 @@
 
 - name: Include binaries
   ansible.builtin.include_tasks: binaries.yml
-
-- name: Include manifests
-  ansible.builtin.include_tasks: manifests.yml
-
-- name: Setup ISO file
-  ansible.builtin.include_role:
-    name: node_isos
-  when: use_iso | default(false) and not dhcp | default(false)

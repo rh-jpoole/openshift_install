@@ -1,28 +1,28 @@
 apiVersion: v1
-baseDomain: {{ vsphere_upi_base_domain }}
+baseDomain: {{ configure_base_domain }}
 compute:
 - architecture: amd64
   hyperthreading: Enabled
   name: worker
-  replicas: 0
+  replicas: {{ __worker_nodes_len }}
 controlPlane:
   architecture: amd64
   hyperthreading: Enabled
   name: master
-  replicas: 3
+  replicas: {{ __master_nodes_len }}
 metadata:
-  name: {{ vsphere_upi_cluster_name }}
+  name: {{ configure_cluster_name }}
 networking:
-  networkType: OpenShiftSDN
+  networkType: {{ configure_network_type }}
   machineNetwork:
     - cidr: 10.1.192.0/22
 platform:
   vsphere:
-    vcenter: {{ vsphere_upi_host }}
-    username: {{ vsphere_upi_username }}
-    password: {{ vsphere_upi_password }}
-    datacenter: {{ vsphere_upi_datacenter }}
-    defaultDatastore: {{ vsphere_upi_datastore }}
-    folder: {{ vsphere_upi_folder }}
-pullSecret: '{{ pull_secret }}'
-sshKey: '{{ ssh_key }}'
+    vcenter: {{ configure_host }}
+    username: {{ configure_username }}
+    password: {{ configure_password }}
+    datacenter: {{ configure_datacenter }}
+    defaultDatastore: {{ configure_datastore }}
+    folder: {{ configure_folder }}
+pullSecret: '{{ configure_pull_secret }}'
+sshKey: '{{ configure_ssh_key }}'

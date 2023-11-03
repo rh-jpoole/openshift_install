@@ -1,5 +1,0 @@
-- hosts: openshift
-  gather_facts: false
-
-  roles:
-    - load_balancer

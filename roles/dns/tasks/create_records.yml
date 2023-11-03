@@ -1,0 +1,74 @@
+- name: Configure a zone for cluster
+  infoblox.nios_modules.nios_zone:
+    name: "{{ dns_zone }}"
+    grid_primary:
+      - name: "{{ dns_primary_grid }}"
+    restart_if_needed: true
+    state: present
+    provider:
+      host: "{{ dns_provider_host }}"
+      username: "{{ dns_provider_username }}"
+      password: "{{ dns_provider_password }}"
+
+- name: Configure an A record for machines
+  infoblox.nios_modules.nios_a_record:
+    name: "{{ item.name }}.{{ dns_zone }}"
+    ipv4: "{{ item.ipaddr }}"
+    state: present
+    provider:
+      host: "{{ dns_provider_host }}"
+      username: "{{ dns_provider_username }}"
+      password: "{{ dns_provider_password }}"
+  loop: "{{ openshift_install_nodes }}"
+
+- name: Configure an A record for etcd
+  infoblox.nios_modules.nios_a_record:
+    name: "etcd-{{ my_idx }}.{{ dns_zone }}"
+    ipv4: "{{ item.ipaddr }}"
+    state: present
+    provider:
+      host: "{{ dns_provider_host }}"
+      username: "{{ dns_provider_username }}"
+      password: "{{ dns_provider_password }}"
+  loop: "{{ openshift_install_nodes }}"
+  loop_control:
+    index_var: my_idx
+
+- name: Configure an A record for virtualIP api
+  infoblox.nios_modules.nios_a_record:
+    name: "{{ item }}.{{ dns_zone }}"
+    ipv4: "{{ openshift_install_api_vip }}"
+    state: present
+    provider:
+      host: "{{ dns_provider_host }}"
+      username: "{{ dns_provider_username }}"
+      password: "{{ dns_provider_password }}"
+  loop:
+    - "api"
+    - "api-int"
+
+- name: Configure an A record for virtualIP ingress
+  infoblox.nios_modules.nios_a_record:
+    name: "*.apps.{{ dns_zone }}"
+    ipv4: "{{ openshift_install_ingress_vip }}"
+    state: present
+    provider:
+      host: "{{ dns_provider_host }}"
+      username: "{{ dns_provider_username }}"
+      password: "{{ dns_provider_password }}"
+
+- name: Configure an SRV records
+  infoblox.nios_modules.nios_srv_record:
+    name: "_etcd-server-ssl._tcp.{{ dns_zone }}"
+    target: "etcd-{{ my_idx }}.{{ dns_zone }}"
+    state: present
+    priority: 0
+    weight: 10
+    port: 2380
+    provider:
+      host: "{{ dns_provider_host }}"
+      username: "{{ dns_provider_username }}"
+      password: "{{ dns_provider_password }}"
+  loop: "{{ openshift_install_nodes }}"
+  loop_control:
+    index_var: my_idx

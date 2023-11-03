@@ -1,4 +1,4 @@
-# Ansible Collection - machacekondra.vsphere_upi
+# Ansible Collection - machacekondra.openshift_install
 
 Documentation for the collection.
 

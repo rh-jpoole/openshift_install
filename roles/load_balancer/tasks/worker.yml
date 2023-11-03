@@ -1,7 +1,7 @@
 - name: worker | Create backend-openshift-router
   f5networks.f5_modules.bigip_pool:
     state: present
-    name: "{{ vsphere_upi_cluster_name }}-backend-openshift-router"
+    name: "{{ openshift_install_cluster_name }}-backend-openshift-router"
     monitors:
       - tcp
     provider:
@@ -12,8 +12,8 @@
 
 - name: worker | Add pool member to backend-openshift-router
   f5networks.f5_modules.bigip_pool_member:
-    pool: "{{ vsphere_upi_cluster_name }}-backend-openshift-router"
-    name: "{{ item.name }}-{{ vsphere_upi_cluster_name }}"
+    pool: "{{ openshift_install_cluster_name }}-backend-openshift-router"
+    name: "{{ item.name }}-{{ openshift_install_cluster_name }}"
     host: "{{ item.ipaddr }}"
     port: 443
     provider:
@@ -21,15 +21,15 @@
       user: "{{ load_balancer_provider_username }}"
       password: "{{ load_balancer_provider_password }}"
       validate_certs: no
-  loop: "{{ vsphere_upi_nodes }}"
+  loop: "{{ openshift_install_nodes }}"
 
 - name: worker | Add virtual server for worker
   f5networks.f5_modules.bigip_virtual_server:
     state: present
-    name: "{{ vsphere_upi_cluster_name }}-frontend-openshift-router"
-    destination: "{{ vsphere_upi_ingress_vip }}"
+    name: "{{ openshift_install_cluster_name }}-frontend-openshift-router"
+    destination: "{{ load_balancer_ingress_vip }}"
     port: 443
-    pool: "{{ vsphere_upi_cluster_name }}-backend-openshift-router"
+    pool: "{{ openshift_install_cluster_name }}-backend-openshift-router"
     snat: Automap
     provider:
       server: "{{ load_balancer_provider_host }}"

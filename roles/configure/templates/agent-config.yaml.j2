@@ -1,34 +1,43 @@
 apiVersion: v1beta1
 kind: AgentConfig
 metadata:
-  name: {{ vsphere_upi_cluster_name }}
-rendezvousIP: {{ vsphere_upi_nodes[0].ipaddr }}
+  name: {{ openshift_install_cluster_name }}
+rendezvousIP: {{ openshift_install_nodes[0].ipaddr }}
 hosts:
-{% for node in vsphere_upi_nodes %}
-  - hostname: vm{{ loop.index0 }}
-    role: master
+{% for node in openshift_install_nodes %}
+  - hostname: {{ node.name }}
+    role: {{ node.role | default('master') }}
     interfaces:
-      - name: ens160
+      - name: {{ configure_interface_name }}
         macAddress: {{ node.macaddr }}
     networkConfig:
       interfaces:
-        - name: ens160
+        - name: {{ configure_interface_name }}
           type: ethernet
           state: up
           ipv4:
             enabled: true
+{% if not openshift_install_dhcp %}
             address:
               - ip: {{ node.ipaddr }}
-                prefix-length: 22
+                prefix-length: {{ __network_prefix | default(24) }}
             dhcp: false
+{% else %}
+            dhcp: true
+            auto-dns: true
+{% endif %}
+{% if not openshift_install_dhcp %}
       dns-resolver:
         config:
           server:
-            - 10.1.196.199
+{% for dns in configure_dns_servers %}
+            - {{ dns }}
+{% endfor %}
+{% endif %}
       routes:
         config:
           - destination: 0.0.0.0/0
-            next-hop-address: 10.1.195.254
-            next-hop-interface: ens160
+            next-hop-address: {{ configure_default_route | default(openshift_install_default_route) }}
+            next-hop-interface: {{ configure_interface_name }}
             table-id: 254
 {% endfor %}

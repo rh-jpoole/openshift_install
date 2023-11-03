@@ -1,0 +1,9 @@
+dns_zone: "{{ openshift_install_cluster_name | mandatory }}.{{ openshift_install_base_domain | mandatory }}"
+dns_primary_grid: "{{ openshift_install_dns_primary_grid | mandatory }}"
+dns_network_view: "{{ openshift_install_dns_network_view | d('default') }}"
+dns_network: "{{ openshift_install_network | mandatory }}"
+dns_dhcp_enabled: "{{ openshift_install_dhcp | default('false') | bool }}"
+
+dns_provider_host: "{{ openshift_install_dns_host | mandatory }}"
+dns_provider_username: "{{ openshift_install_dns_username | mandatory }}"
+dns_provider_password: "{{ openshift_install_dns_password | mandatory }}"
