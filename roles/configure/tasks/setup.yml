@@ -1,17 +1,13 @@
-- name: set connection info
-  ansible.builtin.set_fact:
-    connection_args:
-        vcenter_hostname: "{{ openshift_install_vsphere_host }}"
-        vcenter_username: "{{ openshift_install_vsphere_username }}"
-        vcenter_password: "{{ openshift_install_vsphere_password }}"
-        vcenter_validate_certs: "false"
-
 - name: Create master VMs
   vmware.vmware_rest.vcenter_vm:
+    vcenter_password: "{{ configure_vsphere.vcenter_password }}"
+    vcenter_hostname: "{{ configure_vsphere.vcenter_hostname }}"
+    vcenter_username: "{{ configure_vsphere.vcenter_username }}"
+    vcenter_validate_certs: "{{ configure_vsphere.vcenter_validate_certs }}"
     placement:
-      cluster: "{{ lookup('vmware.vmware_rest.cluster_moid', '/{{ configure_datacenter }}/host/{{ configure_cluster }}', **connection_args) }}"
-      datastore: "{{ lookup('vmware.vmware_rest.datastore_moid', '/{{ configure_datacenter }}/datastore/{{  configure_datastore }}', **connection_args) }}"
-      folder: "{{ lookup('vmware.vmware_rest.folder_moid', '/{{ configure_datacenter }}/omachace', **connection_args) }}"
+      cluster: "{{ lookup('vmware.vmware_rest.cluster_moid', '/{{ configure_datacenter }}/host/{{ configure_cluster }}', **configure_vsphere) }}"
+      datastore: "{{ lookup('vmware.vmware_rest.datastore_moid', '/{{ configure_datacenter }}/datastore/{{  configure_datastore }}', **configure_vsphere) }}"
+      folder: "{{ lookup('vmware.vmware_rest.folder_moid', '/{{ configure_datacenter }}/omachace', **configure_vsphere) }}"
     name: "{{ openshift_install_cluster_name }}-{{ item.name }}"
     guest_OS: RHEL_8_64
     hardware_version: "{{ configure_hardware_version }}"
@@ -41,13 +37,13 @@
       mac_address: "{{ item.macaddr | default(omit) }}"
       backing:
         type: DISTRIBUTED_PORTGROUP
-        network: "{{ lookup('vmware.vmware_rest.network_moid', '/{{ configure_datacenter }}/network/{{ configure_network_name }}', **connection_args) }}"
+        network: "{{ lookup('vmware.vmware_rest.network_moid', '/{{ configure_datacenter }}/network/{{ configure_network_name }}', **configure_vsphere) }}"
     power_on: true
   loop: "{{ openshift_install_nodes }}"
 
 - name: Fetch VMs MAC addresses
   ansible.builtin.set_fact:
-    openshift_install_nodes: "{{ openshift_install_nodes | machacekondra.openshift_install.fetch_macaddrs(cl_name=openshift_install_cluster_name, **connection_args) }}"
+    openshift_install_nodes: "{{ openshift_install_nodes | machacekondra.openshift_install.fetch_macaddrs(cl_name=openshift_install_cluster_name, **configure_vsphere) }}"
 
 ################################################################################################################################################################################
 
@@ -97,6 +93,10 @@
 ## FIXME: no community modules
 - name: Copy ISO file to datastore
   community.vmware.vsphere_copy:
+    hostname: "{{ configure_vsphere.vcenter_hostname }}"
+    username: "{{ configure_vsphere.vcenter_username }}"
+    password: "{{ configure_vsphere.vcenter_password }}"
+    validate_certs: "{{ configure_vsphere.validate_certs | d(false) }}"
     src: "{{ ansible_env.HOME }}/.{{ openshift_install_cluster_name }}/agent.x86_64.iso"
     datacenter: "{{ configure_datacenter }}"
     datastore: "{{ configure_datastore }}"

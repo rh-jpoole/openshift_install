@@ -1,0 +1,49 @@
+- name: binaries | Clean up existing bin and downloads folders
+  ansible.builtin.file:
+    path: "{{ setup_binaries_dir }}/{{ item }}"
+    state: absent
+  with_items: ["bin", "downloads"]
+
+- name: binaries | Create bin and downloads folders
+  ansible.builtin.file:
+    path: "{{ setup_binaries_dir }}/{{ item }}"
+    state: directory
+    mode: '0755'
+  with_items: ["bin", "downloads"]
+
+- name: binaries | Download the oc client binary
+  ansible.builtin.get_url:
+    mode: "0644"
+    url: "{{ __openshift_client }}"
+    dest: "{{ setup_binaries_dir }}/downloads/oc_client.tar.gz"
+    validate_certs: false
+  register: oc_client_download
+
+- name: binaries | Download the openshift-install binary
+  ansible.builtin.get_url:
+    mode: "0644"
+    url: "{{ __openshift_install }}"
+    dest: "{{ setup_binaries_dir }}/downloads/openshift_install.tar.gz"
+    validate_certs: false
+  register: openshift_install_download
+
+- name: binaries | Unarchive oc client
+  ansible.builtin.unarchive:
+    remote_src: true
+    src: "{{ setup_binaries_dir }}/downloads/oc_client.tar.gz"
+    dest: "{{ setup_binaries_dir }}/bin"
+    mode: '0775'
+    exclude:
+      - README.md
+  when: oc_client_download is changed
+
+- name: binaries | Unarchive openshift-install
+  ansible.builtin.unarchive:
+    remote_src: true
+    src: "{{ setup_binaries_dir }}/downloads/openshift_install.tar.gz"
+    dest: "{{ setup_binaries_dir }}/bin"
+    mode: '0775'
+    exclude:
+      - README.md
+  when: openshift_install_download is changed
+  

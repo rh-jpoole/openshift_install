@@ -1,12 +1,10 @@
 - name: Deploy the Openshift
-  hosts: "{{ openshift_install_target_host | default('localhost') }}"
+  hosts: "{{ openshift_install_target_host | d('localhost') }}"
   gather_facts: true
-  environment:
-    VMWARE_HOST: "{{ openshift_install_vsphere_host }}"
-    VMWARE_PASSWORD: "{{ openshift_install_vsphere_password }}"
-    VMWARE_USER: "{{ openshift_install_vsphere_username }}"
-    VMWARE_VALIDATE_CERTS: "false"
   roles:
+    - role: setup
+      tags:
+        - setup
     - role: dns
       tags:
         - dns

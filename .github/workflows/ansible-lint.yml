@@ -4,9 +4,10 @@ on:
     branches: ["main"]
 jobs:
   build:
-    name: Ansible Lint
+    name: Ansible tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Run ansible-lint
-        uses: ansible/ansible-lint@main
+      - name: Perform sanity testing with ansible-test
+        uses: ansible-community/ansible-test-gh-action@release/v1
+        with:
+          ansible-core-version: stable-2.14

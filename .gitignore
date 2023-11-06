@@ -2,3 +2,6 @@
 .hypothesis
 *tar.gz
 *pyc
+__pycache__
+context
+tests/output

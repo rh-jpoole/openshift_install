@@ -1,10 +1,8 @@
-# FIXME: don't use community module
-- name: Start VMs
-  community.vmware.vmware_guest:
-    datacenter: "{{ openshift_install_datacenter }}"
-    name: "{{ openshift_install_cluster_name }}-{{ item.name }}"
-    state: poweredon
-  loop: "{{ openshift_install_nodes }}"
+- name: Turn the power of the VM on
+  vmware.vmware_rest.vcenter_vm_power:
+    state: start
+    vm: "{{ item }}"
+  loop: "{{ openshift_install_nodes | machacekondra.openshift_install.vm_ids(openshift_install_cluster_name, **connection_args) }}"
 
 - name: Wait for install
   ansible.builtin.command: "openshift-install agent wait-for install-complete --dir={{ ansible_env.HOME }}/.{{ openshift_install_cluster_name }}"

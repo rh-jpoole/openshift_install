@@ -1,0 +1,2 @@
+setup_clients_url: "https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp"
+setup_binaries_dir: "{{ ansible_env.HOME }}/.{{ openshift_install_cluster_name }}"

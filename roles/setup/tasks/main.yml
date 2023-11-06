@@ -1,12 +1,12 @@
 - name: vars | Set product version
   ansible.builtin.set_fact:
-    __product_release_version: "{{ config.cluster_version | product_release_version }}"
+    __product_release_version: "{{ openshift_install_cluster_version | machacekondra.openshift_install.product_release_version }}"
     __family: "{{ 'mac' if ansible_os_family == 'Darwin' else 'linux' }}"
 
 - name: vars | Set the download facts openshift binaries
   ansible.builtin.set_fact:
-    __openshift_client: "{{ clients_url }}/openshift-client-{{ __family }}-{{ __product_release_version }}.tar.gz"
-    __openshift_install: "{{ clients_url }}/openshift-install-{{ __family }}-{{ __product_release_version }}.tar.gz"
+    __openshift_client: "{{ setup_clients_url }}/{{ __product_release_version }}/openshift-client-{{ __family }}.tar.gz"
+    __openshift_install: "{{ setup_clients_url }}/{{ __product_release_version }}/openshift-install-{{ __family }}.tar.gz"
 
 - name: Create ssh keys
   ansible.builtin.include_tasks: ssh.yml

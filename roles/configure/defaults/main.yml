@@ -5,9 +5,7 @@ configure_cluster: "{{ openshift_install_cluster | mandatory }}"
 configure_datastore: "{{ openshift_install_datastore | mandatory }}"
 configure_network_name: "{{ openshift_install_network_name | mandatory }}"
 configure_folder: "{{ openshift_install_folder | mandatory }}"
-configure_host: "{{ openshift_install_vsphere_host | mandatory }}"
-configure_username: "{{ openshift_install_vsphere_username | mandatory }}"
-configure_password: "{{ openshift_install_vsphere_password | mandatory }}"
+configure_vsphere: "{{ openshift_install_vsphere | mandatory }}"
 
 # Resources spec
 configure_master_mib: "{{ vpshere_upi_master_mib | default(16384) }}"

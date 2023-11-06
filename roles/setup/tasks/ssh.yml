@@ -6,7 +6,7 @@
 
 - name: ssh | Generate a SSH key-pair
   community.crypto.openssh_keypair:
-    path: "~/.ssh/{{ cluster }}_id_rsa"
+    path: "~/.ssh/{{ openshift_install_cluster_name }}_id_rsa"
     force: false
   register: generated_ssh
 

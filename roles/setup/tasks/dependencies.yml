@@ -2,4 +2,5 @@
   ansible.builtin.package:
     name:
       - nmstate
+      - python3-aiohttp
   become: true
