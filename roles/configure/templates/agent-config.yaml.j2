@@ -24,9 +24,9 @@ hosts:
             dhcp: false
 {% else %}
             dhcp: true
-            auto-dns: true
+            auto-dns: false
 {% endif %}
-{% if not openshift_install_dhcp %}
+{% if openshift_install_dhcp %}
       dns-resolver:
         config:
           server:

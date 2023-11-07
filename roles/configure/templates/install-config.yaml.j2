@@ -18,9 +18,9 @@ networking:
     - cidr: 10.1.192.0/22
 platform:
   vsphere:
-    vcenter: {{ configure_host }}
-    username: {{ configure_username }}
-    password: {{ configure_password }}
+    vcenter: {{ configure_vsphere.vcenter_hostname }}
+    username: {{ configure_vsphere.vcenter_username }}
+    password: {{ configure_vsphere.vcenter_password }}
     datacenter: {{ configure_datacenter }}
     defaultDatastore: {{ configure_datastore }}
     folder: {{ configure_folder }}

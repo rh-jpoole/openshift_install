@@ -5,7 +5,7 @@ configure_cluster: "{{ openshift_install_cluster | mandatory }}"
 configure_datastore: "{{ openshift_install_datastore | mandatory }}"
 configure_network_name: "{{ openshift_install_network_name | mandatory }}"
 configure_folder: "{{ openshift_install_folder | mandatory }}"
-configure_vsphere: "{{ openshift_install_vsphere | mandatory }}"
+configure_vsphere: "{{ openshift_install_vsphere | d(lookup('community.hashi_vault.hashi_vault', 'secret={{ openshift_install_vault_secret_vsphere }} token={{ openshift_install_vault_token }} validate_certs=false url={{ openshift_install_vault_url }}')) }}"
 
 # Resources spec
 configure_master_mib: "{{ vpshere_upi_master_mib | default(16384) }}"
@@ -28,6 +28,4 @@ configure_pull_secret: "{{ openshift_install_pull_secret | mandatory }}"
 # DHCP
 configure_dhcp: "{{ openshift_install_dhcp | default('false') | bool }}"
 configure_dhcp_reservation: "{{ openshift_install_dhcp_reservation | default('true') | bool }}"
-configure_dns_provider_host: "{{ openshift_install_dns_host | mandatory }}"
-configure_dns_provider_username: "{{ openshift_install_dns_username | mandatory }}"
-configure_dns_provider_password: "{{ openshift_install_dns_password | mandatory }}"
+configure_dns_provider: "{{ openshift_install_dns | d(lookup('community.hashi_vault.hashi_vault', 'secret={{ openshift_install_vault_secret_dns }} token={{ openshift_install_vault_token }} validate_certs=false url={{ openshift_install_vault_url }}')) }}"

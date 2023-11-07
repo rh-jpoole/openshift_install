@@ -141,7 +141,7 @@ class FilterModule(object):
         session = await self.__get_session(**kwargs)
 
         # Fetch vm id
-        vm_id = self._fetch_vm_id(session, vm, vcenter_hostname)
+        vm_id = await self._fetch_vm_id(session, vm, vcenter_hostname)
         if vm_id is None:
             return
 

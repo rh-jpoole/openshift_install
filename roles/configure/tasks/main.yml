@@ -5,4 +5,6 @@
   ansible.builtin.include_tasks: dhcp_reserve.yml
 
 - name: Include install
-  ansible.builtin.include_tasks: install.yml
+  ansible.builtin.import_tasks: install.yml
+  tags:
+    - poweron

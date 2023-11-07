@@ -1,8 +1,12 @@
-- name: Turn the power of the VM on
+- name: Power on the VM
   vmware.vmware_rest.vcenter_vm_power:
+    vcenter_password: "{{ configure_vsphere.vcenter_password }}"
+    vcenter_hostname: "{{ configure_vsphere.vcenter_hostname }}"
+    vcenter_username: "{{ configure_vsphere.vcenter_username }}"
+    vcenter_validate_certs: "{{ configure_vsphere.vcenter_validate_certs }}"
     state: start
     vm: "{{ item }}"
-  loop: "{{ openshift_install_nodes | machacekondra.openshift_install.vm_ids(openshift_install_cluster_name, **connection_args) }}"
+  loop: "{{ openshift_install_nodes | machacekondra.openshift_install.vm_ids(openshift_install_cluster_name, **configure_vsphere) }}"
 
 - name: Wait for install
   ansible.builtin.command: "openshift-install agent wait-for install-complete --dir={{ ansible_env.HOME }}/.{{ openshift_install_cluster_name }}"

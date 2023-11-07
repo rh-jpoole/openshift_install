@@ -4,6 +4,4 @@ dns_network_view: "{{ openshift_install_dns_network_view | d('default') }}"
 dns_network: "{{ openshift_install_network | mandatory }}"
 dns_dhcp_enabled: "{{ openshift_install_dhcp | default('false') | bool }}"
 
-dns_provider_host: "{{ openshift_install_dns_host | mandatory }}"
-dns_provider_username: "{{ openshift_install_dns_username | mandatory }}"
-dns_provider_password: "{{ openshift_install_dns_password | mandatory }}"
+dns_provider: "{{ openshift_install_dns | d(lookup('community.hashi_vault.hashi_vault', 'secret=openshift_install_vault_secret_dns token=openshift_install_vault_token validate_certs=false url=openshift_install_vault_url')) }}"

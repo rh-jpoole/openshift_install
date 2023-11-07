@@ -14,6 +14,8 @@ Role support following platforms:
 
 ## Dependencies:
  - python3-aiohttp (vmware)
+ - python3-hvac (hashi vault)
+ - hvac
  - infoblox-client (infoblox)
  - nmstate (openshift-install agent)
  - oc (openshift-install)
