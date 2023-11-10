@@ -12,4 +12,4 @@
 
 - name: ssh | Set installer ssh key variable
   ansible.builtin.set_fact:
-    installer_ssh_key: "{{ generated_ssh.public_key }}"
+    openshift_install_ssh_key: "{{ generated_ssh.public_key }}"

@@ -1,8 +1,8 @@
 - name: Include setup
-  ansible.builtin.include_tasks: setup.yml
+  ansible.builtin.import_tasks: setup.yml
 
 - name: Include DHCP reservation
-  ansible.builtin.include_tasks: dhcp_reserve.yml
+  ansible.builtin.import_tasks: dhcp_reserve.yml
 
 - name: Include install
   ansible.builtin.import_tasks: install.yml

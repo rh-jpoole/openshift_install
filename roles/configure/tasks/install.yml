@@ -9,4 +9,4 @@
   loop: "{{ openshift_install_nodes | machacekondra.openshift_install.vm_ids(openshift_install_cluster_name, **configure_vsphere) }}"
 
 - name: Wait for install
-  ansible.builtin.command: "openshift-install agent wait-for install-complete --dir={{ ansible_env.HOME }}/.{{ openshift_install_cluster_name }}"
+  ansible.builtin.command: "{{ configure_binaries_dir }}/bin/openshift-install agent wait-for install-complete --dir={{ ansible_env.HOME }}/.{{ openshift_install_cluster_name }}"

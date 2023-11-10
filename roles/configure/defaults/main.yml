@@ -8,8 +8,8 @@ configure_folder: "{{ openshift_install_folder | mandatory }}"
 configure_vsphere: "{{ openshift_install_vsphere | d(lookup('community.hashi_vault.hashi_vault', 'secret={{ openshift_install_vault_secret_vsphere }} token={{ openshift_install_vault_token }} validate_certs=false url={{ openshift_install_vault_url }}')) }}"
 
 # Resources spec
-configure_master_mib: "{{ vpshere_upi_master_mib | default(16384) }}"
-configure_master_cpu_count: "{{ openshift_install_master_cpu_count | default(4) }}"
+configure_master_mib: "{{ vpshere_upi_master_mib | default(32768) }}"
+configure_master_cpu_count: "{{ openshift_install_master_cpu_count | default(6) }}"
 configure_master_cpu_cps: "{{ openshift_install_master_cpu_cps | default(2) }}"
 
 # Networking
@@ -24,6 +24,8 @@ configure_base_domain: "{{ openshift_install_base_domain | mandatory }}"
 configure_cluster_name: "{{ openshift_install_cluster_name | mandatory }}"
 configure_ssh_key: "{{ openshift_install_ssh_key | mandatory }}"
 configure_pull_secret: "{{ openshift_install_pull_secret | mandatory }}"
+
+configure_binaries_dir: "{{ setup_binaries_dir | d(openshift_install_binaries_dir) | d('/usr/bin') }}"
 
 # DHCP
 configure_dhcp: "{{ openshift_install_dhcp | default('false') | bool }}"

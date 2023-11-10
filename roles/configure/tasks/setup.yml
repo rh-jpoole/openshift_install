@@ -44,6 +44,8 @@
 - name: Fetch VMs MAC addresses
   ansible.builtin.set_fact:
     openshift_install_nodes: "{{ openshift_install_nodes | machacekondra.openshift_install.fetch_macaddrs(cl_name=openshift_install_cluster_name, **configure_vsphere) }}"
+  tags:
+    - install-config
 
 ################################################################################################################################################################################
 
@@ -70,6 +72,8 @@
   vars:
     __master_nodes_len: "{{ openshift_install_nodes | machacekondra.openshift_install.master_nodes_len }}"
     __worker_nodes_len: "{{ openshift_install_nodes | machacekondra.openshift_install.worker_nodes_len }}"
+  tags:
+    - install-config
 
 - name: Generate agent-config.yaml
   ansible.builtin.template:
@@ -78,17 +82,27 @@
     mode: "0644"
   vars:
     __network_prefix: "{{ openshift_install_network | ansible.utils.ipaddr('prefix') }}"
+  tags:
+    - install-config
 
 - name: Check if ISO already exists
   ansible.builtin.stat:
     name: "{{ ansible_env.HOME }}/.{{ openshift_install_cluster_name }}/agent.x86_64.iso"
   register: iso_file
+  tags:
+    - create-iso
+
+## Remove when working openshift-install is available
+- name: Include workaround for AGENT-626
+  ansible.builtin.import_tasks: workaround_AGENT-626.yml
+  tags:
+    - install-config
 
 - name: Create ISO image
-  ansible.builtin.command: "openshift-install agent create image --dir={{ ansible_env.HOME }}/.{{ openshift_install_cluster_name }}"
-  environment:
-    OPENSHIFT_INSTALL_RELEASE_IMAGE_OVERRIDE: quay.io/openshift-release-dev/ocp-release:4.12.41-x86_64
+  ansible.builtin.command: "{{ configure_binaries_dir }}/bin/openshift-install agent create image --dir={{ ansible_env.HOME }}/.{{ openshift_install_cluster_name }}"
   when: not iso_file.stat.exists
+  tags:
+    - create-iso
 
 ## FIXME: no community modules
 - name: Copy ISO file to datastore
