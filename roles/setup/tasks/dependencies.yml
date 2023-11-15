@@ -3,4 +3,6 @@
     name:
       - nmstate
       - python3-aiohttp
+      - python3-hvac
+      # infloblox-client using pip
   become: true

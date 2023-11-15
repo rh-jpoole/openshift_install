@@ -3,7 +3,7 @@
     vcenter_password: "{{ configure_vsphere.vcenter_password }}"
     vcenter_hostname: "{{ configure_vsphere.vcenter_hostname }}"
     vcenter_username: "{{ configure_vsphere.vcenter_username }}"
-    vcenter_validate_certs: "{{ configure_vsphere.vcenter_validate_certs }}"
+    vcenter_validate_certs: "{{ configure_vsphere.vcenter_validate_certs | d(false) }}"
     placement:
       cluster: "{{ lookup('vmware.vmware_rest.cluster_moid', '/{{ configure_datacenter }}/host/{{ configure_cluster }}', **configure_vsphere) }}"
       datastore: "{{ lookup('vmware.vmware_rest.datastore_moid', '/{{ configure_datacenter }}/datastore/{{  configure_datastore }}', **configure_vsphere) }}"
@@ -27,7 +27,7 @@
       start_connected: true
       backing:
         type: ISO_FILE
-        iso_file: "[{{ configure_datastore }}] ISO/{{ openshift_install_cluster_name }}-boot-iso.iso"
+        iso_file: "[{{ configure_datastore }}] ISO/{{ configure_cluster_name }}-boot-iso.iso"
       sata:
         bus: 0
         unit: 2
@@ -43,31 +43,30 @@
 
 - name: Fetch VMs MAC addresses
   ansible.builtin.set_fact:
-    openshift_install_nodes: "{{ openshift_install_nodes | machacekondra.openshift_install.fetch_macaddrs(cl_name=openshift_install_cluster_name, **configure_vsphere) }}"
+    openshift_install_nodes: "{{ openshift_install_nodes | machacekondra.openshift_install.fetch_macaddrs(cl_name=configure_cluster_name, **configure_vsphere) }}"
+  tags:
+    - install-config
+
+- name: Fetch VMs IP addresses
+  ansible.builtin.set_fact:
+    openshift_install_nodes: "{{ openshift_install_nodes | machacekondra.openshift_install.fetch_ips(configure_cluster_name, configure_base_domain, provider=configure_dns_provider) }}"
+  when: openshift_install_nodes | selectattr('ipaddr', 'defined') | length == 0
   tags:
     - install-config
 
 ################################################################################################################################################################################
 
-- name: Create the cluster folder
+- name: Ensure the cluster folder exists
   ansible.builtin.file:
-    path: "{{ ansible_env.HOME }}/.{{ openshift_install_cluster_name }}"
+    path: "{{ configure_cluster_home_dir }}"
     state: directory
-
-- name: Create the manifests folder
-  ansible.builtin.file:
-    path: "{{ ansible_env.HOME }}/.{{ openshift_install_cluster_name }}/manifests"
-    state: directory
-
-- name: Copy the openshift-gitops manifest
-  ansible.builtin.copy:
-    src: gitops-subscription.yml
-    dest: "{{ ansible_env.HOME }}/.{{ openshift_install_cluster_name }}/manifests"
+  tags:
+    - install-config
 
 - name: Generate install-config.yaml
   ansible.builtin.template:
     src: install-config.yaml.j2
-    dest: "{{ ansible_env.HOME }}/.{{ openshift_install_cluster_name }}/install-config.yaml"
+    dest: "{{ configure_cluster_home_dir }}/install-config.yaml"
     mode: "0644"
   vars:
     __master_nodes_len: "{{ openshift_install_nodes | machacekondra.openshift_install.master_nodes_len }}"
@@ -78,7 +77,7 @@
 - name: Generate agent-config.yaml
   ansible.builtin.template:
     src: agent-config.yaml.j2
-    dest: "{{ ansible_env.HOME }}/.{{ openshift_install_cluster_name }}/agent-config.yaml"
+    dest: "{{ configure_cluster_home_dir }}/agent-config.yaml"
     mode: "0644"
   vars:
     __network_prefix: "{{ openshift_install_network | ansible.utils.ipaddr('prefix') }}"
@@ -87,7 +86,7 @@
 
 - name: Check if ISO already exists
   ansible.builtin.stat:
-    name: "{{ ansible_env.HOME }}/.{{ openshift_install_cluster_name }}/agent.x86_64.iso"
+    name: "{{ configure_cluster_home_dir }}/agent.x86_64.iso"
   register: iso_file
   tags:
     - create-iso
@@ -96,10 +95,10 @@
 - name: Include workaround for AGENT-626
   ansible.builtin.import_tasks: workaround_AGENT-626.yml
   tags:
-    - install-config
+    - cluster-manifests
 
 - name: Create ISO image
-  ansible.builtin.command: "{{ configure_binaries_dir }}/bin/openshift-install agent create image --dir={{ ansible_env.HOME }}/.{{ openshift_install_cluster_name }}"
+  ansible.builtin.command: "{{ configure_install_binary }} agent create image --dir={{ configure_cluster_home_dir }}"
   when: not iso_file.stat.exists
   tags:
     - create-iso
@@ -111,7 +110,9 @@
     username: "{{ configure_vsphere.vcenter_username }}"
     password: "{{ configure_vsphere.vcenter_password }}"
     validate_certs: "{{ configure_vsphere.validate_certs | d(false) }}"
-    src: "{{ ansible_env.HOME }}/.{{ openshift_install_cluster_name }}/agent.x86_64.iso"
+    src: "{{ configure_cluster_home_dir }}/agent.x86_64.iso"
     datacenter: "{{ configure_datacenter }}"
     datastore: "{{ configure_datastore }}"
-    path: "ISO/{{ openshift_install_cluster_name }}-boot-iso.iso"
+    path: "ISO/{{ configure_cluster_name }}-boot-iso.iso"
+  tags:
+    - upload-iso

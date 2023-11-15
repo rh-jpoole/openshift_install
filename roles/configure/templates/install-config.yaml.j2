@@ -12,10 +12,11 @@ controlPlane:
   replicas: {{ __master_nodes_len }}
 metadata:
   name: {{ configure_cluster_name }}
+fips: {{ configure_fips }}
 networking:
   networkType: {{ configure_network_type }}
   machineNetwork:
-    - cidr: 10.1.192.0/22
+    - cidr: {{ configure_network }}
 platform:
   vsphere:
     vcenter: {{ configure_vsphere.vcenter_hostname }}
@@ -23,6 +24,7 @@ platform:
     password: {{ configure_vsphere.vcenter_password }}
     datacenter: {{ configure_datacenter }}
     defaultDatastore: {{ configure_datastore }}
+    cluster: {{ configure_cluster }}
     folder: {{ configure_folder }}
     apiVIPs: ['1.2.3.4']
     ingressVIPs: ['1.2.3.5']

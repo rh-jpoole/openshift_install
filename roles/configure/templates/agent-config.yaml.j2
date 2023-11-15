@@ -25,7 +25,7 @@ hosts:
 {% else %}
             dhcp: true
 {% endif %}
-{% if configure_dns_servers is defined and configure_dns_servers | length > 1 %}
+{% if configure_dns_servers | length > 0 %}
       dns-resolver:
         config:
           server:
@@ -33,10 +33,12 @@ hosts:
             - {{ dns }}
 {% endfor %}
 {% endif %}
+{% if configure_default_route is defined and configure_default_route != "" %}
       routes:
         config:
           - destination: 0.0.0.0/0
-            next-hop-address: {{ configure_default_route | default(openshift_install_default_route) }}
+            next-hop-address: {{ configure_default_route }}
             next-hop-interface: {{ configure_interface_name }}
             table-id: 254
+{% endif %}
 {% endfor %}

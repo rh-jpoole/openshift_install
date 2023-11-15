@@ -1,8 +1,19 @@
+- name: binaries | Set product version
+  ansible.builtin.set_fact:
+    __product_release_version: "{{ setup_cluster_version | machacekondra.openshift_install.product_release_version }}"
+    __family: "{{ 'mac' if ansible_os_family == 'Darwin' else 'linux' }}"
+
+- name: binaries| Set the download facts openshift binaries
+  ansible.builtin.set_fact:
+    __openshift_client: "{{ setup_clients_url }}/{{ __product_release_version }}/openshift-client-{{ __family }}.tar.gz"
+    __openshift_install: "{{ setup_clients_url }}/{{ __product_release_version }}/openshift-install-{{ __family }}.tar.gz"
+
 - name: binaries | Clean up existing bin and downloads folders
   ansible.builtin.file:
     path: "{{ setup_binaries_dir }}/{{ item }}"
     state: absent
   with_items: ["bin", "downloads"]
+  when: setup_binaries_clean
 
 - name: binaries | Create bin and downloads folders
   ansible.builtin.file:
@@ -11,13 +22,23 @@
     mode: '0755'
   with_items: ["bin", "downloads"]
 
-- name: binaries | Download the oc client binary
+# TODO: extract it from: https://amd64.origin.releases.ci.openshift.org/
+- name: binaries | Download the openshift_client binary
   ansible.builtin.get_url:
     mode: "0644"
     url: "{{ __openshift_client }}"
-    dest: "{{ setup_binaries_dir }}/downloads/oc_client.tar.gz"
+    dest: "{{ setup_binaries_dir }}/downloads/openshift_client.tar.gz"
     validate_certs: false
-  register: oc_client_download
+  register: openshift_oc_download
+  when: setup_install_binary
+
+- name: binaries | Unarchive openshift_client
+  ansible.builtin.unarchive:
+    remote_src: true
+    src: "{{ setup_binaries_dir }}/downloads/openshift_client.tar.gz"
+    dest: "{{ setup_binaries_dir }}/bin"
+    mode: '0775'
+  when: openshift_oc_download is changed
 
 - name: binaries | Download the openshift-install binary
   ansible.builtin.get_url:
@@ -26,16 +47,6 @@
     dest: "{{ setup_binaries_dir }}/downloads/openshift_install.tar.gz"
     validate_certs: false
   register: openshift_install_download
-
-- name: binaries | Unarchive oc client
-  ansible.builtin.unarchive:
-    remote_src: true
-    src: "{{ setup_binaries_dir }}/downloads/oc_client.tar.gz"
-    dest: "{{ setup_binaries_dir }}/bin"
-    mode: '0775'
-    exclude:
-      - README.md
-  when: oc_client_download is changed
 
 - name: binaries | Unarchive openshift-install
   ansible.builtin.unarchive:

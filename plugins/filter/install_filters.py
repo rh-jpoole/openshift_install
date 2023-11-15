@@ -5,6 +5,7 @@ import re
 import urllib.parse
 
 from ansible.module_utils.urls import open_url
+from ansible_collections.infoblox.nios_modules.plugins.module_utils.api import WapiLookup
 from ansible_collections.vmware.vmware_rest.plugins.plugin_utils.lookup import get_credentials
 from ansible_collections.vmware.vmware_rest.plugins.module_utils.vmware_rest import open_session
 
@@ -14,6 +15,7 @@ class FilterModule(object):
     def filters(self):
         'Define filters'
         return {
+            'fetch_ips': self.fetch_ips,
             'fetch_macaddrs': self.fetch_macaddrs,
             'merge_ips': self.merge_ips,
             'network_cidr': self.network_cidr,
@@ -23,6 +25,18 @@ class FilterModule(object):
             'cluster_base_version': self.cluster_base_version,
             'product_release_version': self.product_release_version,
         }
+
+    def fetch_ips(self, nodes, cl_name, domain_name, **kwargs):
+        provider = kwargs.pop('provider', {})
+        wapi = WapiLookup(provider)
+
+        ret = []
+        for n in nodes:
+            ip = wapi.get_object('record:a', {'name': n['name'] + '.' + cl_name + '.' + domain_name })
+            if ip:
+                n['ipaddr'] = ip[0]['ipv4addr']
+                ret.append(n)
+        return ret
 
     def cluster_base_version(self, cluster_version):
         """
