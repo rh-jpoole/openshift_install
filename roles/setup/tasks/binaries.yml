@@ -22,7 +22,6 @@
     mode: '0755'
   with_items: ["bin", "downloads"]
 
-# TODO: extract it from: https://amd64.origin.releases.ci.openshift.org/
 - name: binaries | Download the openshift_client binary
   ansible.builtin.get_url:
     mode: "0644"
@@ -30,7 +29,6 @@
     dest: "{{ setup_binaries_dir }}/downloads/openshift_client.tar.gz"
     validate_certs: false
   register: openshift_oc_download
-  when: setup_install_binary
 
 - name: binaries | Unarchive openshift_client
   ansible.builtin.unarchive:
@@ -47,6 +45,7 @@
     dest: "{{ setup_binaries_dir }}/downloads/openshift_install.tar.gz"
     validate_certs: false
   register: openshift_install_download
+  when: not openshift_install_registry | d(false)
 
 - name: binaries | Unarchive openshift-install
   ansible.builtin.unarchive:

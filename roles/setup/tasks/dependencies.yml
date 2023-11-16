@@ -2,7 +2,9 @@
   ansible.builtin.package:
     name:
       - nmstate
+      - podman
       - python3-aiohttp
       - python3-hvac
+      - python3-passlib
       # infloblox-client using pip
   become: true

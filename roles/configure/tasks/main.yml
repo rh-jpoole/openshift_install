@@ -1,3 +1,9 @@
+- name: Include registry
+  ansible.builtin.import_tasks: registry.yml
+  when: openshift_install_registry | d(false)
+  tags:
+    - registry
+
 - name: Include setup
   ansible.builtin.import_tasks: setup.yml
 

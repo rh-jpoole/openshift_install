@@ -28,5 +28,7 @@ platform:
     folder: {{ configure_folder }}
     apiVIPs: ['1.2.3.4']
     ingressVIPs: ['1.2.3.5']
-pullSecret: '{{ configure_pull_secret }}'
+pullSecret: '{{ configure_pull_secret | tojson | safe }}'
 sshKey: '{{ configure_ssh_key }}'
+additionalTrustBundle: |
+    {{ configure_registry_cert | indent(4) }}

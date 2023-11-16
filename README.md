@@ -41,13 +41,16 @@ ansible-playbook -i ocp_prod machacekondra.openshift_install.configure
 ```
 
 
+## Registry
+Registry can be installed and cofigured on any machine on the network so user can use disconnected envirnoment with custom registry.
+
+### Requirements
+ - podman
+ - python3-passlib (httpasswd)
+
 ## Flow
 
 ## Variables
-
-### Custom
-`Define a openshift-install binary on a target machine, if set we won't download openshift-install binary based on `openshift_install_version` variable`
-openshift_install_binary
 
 ### Base config
 ``

@@ -2,5 +2,4 @@ setup_clients_url: "https://mirror.openshift.com/pub/openshift-v4/x86_64/clients
 setup_cluster_name: "{{ openshift_install_cluster_name | mandatory }}"
 setup_binaries_dir: "{{ ansible_env.HOME }}/.{{ setup_cluster_name }}"
 setup_binaries_clean: false
-setup_install_binary: "{{ openshift_install_binary is not defined }}"
 setup_cluster_version: "{{ openshift_install_cluster_version | default('latest') }}"

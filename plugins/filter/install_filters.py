@@ -1,6 +1,7 @@
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
+import json
 import re
 import urllib.parse
 
@@ -24,7 +25,16 @@ class FilterModule(object):
             'vm_ids': self.vm_ids,
             'cluster_base_version': self.cluster_base_version,
             'product_release_version': self.product_release_version,
+            'combine_pull_secret': self.combine_pull_secret,
+            'create_pull_secret': self.create_pull_secret,
         }
+
+    def create_pull_secret(self, host, creds, email):
+        return {"auths": {host: {"auth": creds, "email": email}}}
+
+    def combine_pull_secret(self, pull_secret, host, creds, email):
+        pull_secret["auths"].update({host: {"auth": creds, "email": email}})
+        return json.dumps(pull_secret)
 
     def fetch_ips(self, nodes, cl_name, domain_name, **kwargs):
         provider = kwargs.pop('provider', {})

@@ -5,6 +5,10 @@
     - role: setup
       tags:
         - setup
+    - role: registry
+      tags:
+        - registry
+      when: openshift_install_registry | d(false)
     - role: dns
       tags:
         - dns
