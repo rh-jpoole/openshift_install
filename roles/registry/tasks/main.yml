@@ -5,25 +5,38 @@
     mode: '0755'
   with_items: ["auth", "certs", "data"]
 
-- name: Create a cert config file
-  ansible.builtin.template:
-    mode: "0644"
-    src: ssl-ca.j2
-    dest: "{{ registry_directory }}/certs/ssl-ca.cnf"
-
 - name: Generate RSA private key
   community.crypto.openssl_privatekey:
     path: "{{ registry_directory }}/certs/domain.key"
     size: 4096
     type: RSA
 
+- name: Generate a CSR (Certificate Signing Request)
+  community.crypto.openssl_csr:
+    path: "{{ registry_directory }}/certs/domain.csr"
+    privatekey_path: "{{ registry_directory }}/certs/domain.key"
+    subject:
+      commonName: "{{ registry_host }}"
+      countryName: "US"
+      stateOrProvinceName: "NC"
+      localityName: "Raleigh"
+      organizationName: "Red Hat"
+    key_usage:
+      - keyCertSign
+      - cRLSign
+    basic_constraints:
+      - "CA:TRUE"
+    subject_alt_name:
+      - "DNS:{{ registry_host }}"
+      - "DNS:{{ registry_host.split('.')[0] }}"
+
 - name: Create a certificate
   community.crypto.x509_certificate:
     path: "{{ registry_directory }}/certs/domain.crt"
     privatekey_path: "{{ registry_directory }}/certs/domain.key"
+    csr_path: "{{ registry_directory }}/certs/domain.csr"
     provider: selfsigned
-    selfsigned_not_after: +365d
-    selfsigned_digest: sha256
+    selfsigned_not_after: +3650d
 
 - name: Create htpasswd file
   community.general.htpasswd:
