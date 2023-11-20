@@ -1,32 +1,37 @@
 # Openshift install collection
-This collection includes roles to help users setup openshift with user provisined infrastructure.
-This collection contains multiple roles which help to setup infrastructure for the Openshift like
-DNS and load balancers on external platforms. We currently support Infoblox and F5.
+This collection contains roles to install and configure Openshift and its infrastructure.
+There are roles to setup external DNS and LoadBalancer. It's using agent based installation
+method.
 
-Role support following platforms:
-  - baremetel
+Collection support following Openshift platforms:
   - vpshere
-  - none
+
+Collection support following DNS systems:
+  - Infoblox
+
+Collection support following LoadBalancer systems:
+  - F5
 
 ## Requirements:
  - Python 3.8
  - Ansible 2.13
 
 ## Dependencies:
+Following dependencies will be installed by playbook on the node which is used for installation:
+
  - python3-aiohttp (vmware)
  - python3-hvac (hashi vault)
  - hvac
  - infoblox-client (infoblox)
  - nmstate (openshift-install agent)
- - openshift-install
  - oc
-
+ - openshift-install
 
 ## Getting started:
 
 ### Install role
 
-To install the role please run following command
+The role is available on Ansible Galaxy, to install the role please run following command
 
 ```
 ansible-galaxy collection install machacekondra.openshift_install
@@ -34,51 +39,25 @@ ansible-galaxy collection install machacekondra.openshift_install
 
 ### Configure variables
 
-To run the configure playbook execute following command:
+There are few mandatory variables which must be specified to configure the infrastructure.
+All the variables are documented in specific roles and also [here](doc/vars.md).
+
+## Execution
+
+To run the playbook execute following command:
 
 ```
-ansible-playbook -i ocp_prod machacekondra.openshift_install.configure
+ansible-playbook -i ocp_prod machacekondra.openshift_install.run
 ```
 
+Where the `ocp_prod` is inventory file, with specified variables for your infrastructure.
+The example inventory files are in `examples` directory.
 
 ## Registry
-Registry can be installed and cofigured on any machine on the network so user can use disconnected envirnoment with custom registry.
+Custom container registry can be installed and cofigured on any machine on the network so user can use disconnected envirnoment with their registry.
 
-### Requirements
+### Dependencies
+Following dependencies will be installed on the target machine.
  - podman
  - python3-passlib (httpasswd)
 
-## Flow
-
-## Variables
-
-### Base config
-``
-openshift_install_base_domain
-``
-openshift_install_cluster_name: omachace-vsphere-day2
-
-### Vsphere
-openshift_install_datacenter: DC-Practice-Lab
-openshift_install_cluster: Practice-Lab-Cluster
-openshift_install_datastore: pool0-ceph-storage
-openshift_install_folder: "/DC-Practice-Lab/vm/omachace"
-openshift_install_network_name: "vlan-314 - DPortGroup"
-
-### LB
-openshift_install_api_vip: 10.1.192.242
-openshift_install_ingress_vip: 10.1.192.243
-
-### Hashi Vault
-openshift_install_vault_secret_dns: flightpath/data/dns
-openshift_install_vault_secret_lb: flightpath/data/lb
-openshift_install_vault_secret_vsphere: flightpath/data/vsphere
-openshift_install_vault_url: https://10.1.196.198:8200/
-
-### Nodes
-openshift_install_network: "10.1.198.224/28"
-openshift_install_dhcp: true
-openshift_install_nodes:
-  - {name: 'vm0'}
-  - {name: 'vm1'}
-  - {name: 'vm2'}

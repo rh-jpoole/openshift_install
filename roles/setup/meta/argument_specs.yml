@@ -1,0 +1,25 @@
+---
+argument_specs:
+  # roles/myapp/tasks/main.yml entry point
+  main:
+    short_description: The main entry point for the setup role.
+    options:
+      myapp_int:
+        type: "int"
+        required: false
+        default: 42
+        description: "The integer value, defaulting to 42."
+
+      myapp_str:
+        type: "str"
+        required: true
+        description: "The string value"
+
+  # roles/myapp/tasks/alternate.yml entry point
+  alternate:
+    short_description: The alternate entry point for the setup role.
+    options:
+      openshift_install_ssh_key:
+        type: "str"
+        required: false
+        description: "Public SSH key which should be deployed on Openshift nodes. If not defined, role will generate one."

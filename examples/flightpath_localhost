@@ -7,21 +7,33 @@ all:
       hosts:
         localhost:
       vars:
+        # Registry
+        openshift_install_registry: true
+        openshift_install_ocp_release: 4.15.0-ec.2-x86_64 
+        openshift_install_registry_host: fedora-jumpbox.flightpath.internal
+
         # Basic vars
         openshift_install_base_domain: flightpath.internal
         openshift_install_cluster_name: omachace-agent-dhcp
-	openshift_install_cluster_version: 4.11
 
         # Vsphere infra vars
         openshift_install_datacenter: DC-Practice-Lab
         openshift_install_cluster: Practice-Lab-Cluster
-        openshift_install_datastore: datastore1
+        openshift_install_datastore: pool0-ceph-storage
         openshift_install_folder: "/DC-Practice-Lab/vm/omachace"
         openshift_install_network_name: "vlan-314 - DPortGroup"
 
         # Virtual IP
         openshift_install_api_vip: 10.1.192.238
         openshift_install_ingress_vip: 10.1.192.239
+
+        # Hashi vault
+        openshift_install_vault_secret_dns: flightpath/data/dns
+        openshift_install_vault_secret_lb: flightpath/data/lb
+        openshift_install_vault_secret_vsphere: flightpath/data/vsphere
+        openshift_install_vault_url: https://10.1.196.198:8200/
+        # Token is stored in ansible vault
+        # openshift_install_vault_token: 
 
         # Nodes spec
         openshift_install_dns_servers:
@@ -30,16 +42,10 @@ all:
         openshift_install_network: "10.1.198.224/28"
         openshift_install_dhcp: true
         openshift_install_nodes:
-          - {name: 'vm0', 'ipaddr': '10.1.198.226'} 
-          - {name: 'vm1', 'ipaddr': '10.1.198.227'}
-          - {name: 'vm2', 'ipaddr': '10.1.198.228'}
-
-        # Load balancer
-        openshift_install_lb_host: 10.1.192.200
-
-        # DNS
-        openshift_install_dns_primary_grid: "infoblox-1.localdomain"
-        openshift_install_dns_host: "10.1.196.199"
+          - {name: 'vm0'} 
+          - {name: 'vm1'}
+          - {name: 'vm2'}
 
         # Openshift values:
-        openshift_install_ssh_key: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQD1iL9/XVz0a/dJ2lYyAnxCc5lbeark2gHcXDLKXDo9+zJlJ4uVAzMpv0ijV2nAMkFOELJDgvCuKzmwtuv31PhHxnnB4SOPVaOyJtmVhVJIJ4cQWxxrELDhJDgcE1fTR1jZPa3lDleq1nPp6hkAfh9li+/8RwKwalcbu91jWVD0a9vzyYhSf2e+6UtbIINFEmY+Bnnou970EBfBVB4NSool9urXsIJuhhxCuL0A+131a5mMEN4G6KxbNFdmkfPbbUvFEmFCeDiYi63r0vnOXIxrjjZV8Zqc2XW/WfNqJfJaNzfshgqoo9tVm9utgN0/C5pb1GUqRgyb5Buvrlv6wzhUaTcGZBeMRi/mrjHXkxMzj6vp6C/vE8wy1LGp78mnCtRQM88eCTLpt9jyk/rwVi4g1dTugV54Zq/M8g+BEo7e744QaYeKIuyIrdgMytzAANramA0lpDc8igviNTG77vkAxfqWB6fRJ+Zc07uUDO3BonhMIg/FXOJ8Xz47kTIpBSlr/KszpFYTCfEXjZqJisItv+NCNMJ8tbRr7/TQAkx8W+8qCNNxVeCjEqTLYFZari6W0S2EpyeoUjxOPb+SosqNnbHlElw/yx5nB3zSrK0klRrbb34mxpFM7JTWE6vr9GogE9Yc6QnSwMU12iRRU2maCgsIR4pD1tjpVpVk3Op8tQ=='
+        openshift_install_dns_primary_grid: "infoblox-1.localdomain"
+        openshift_install_ssh_key: "ssh-rsa AAA.."
