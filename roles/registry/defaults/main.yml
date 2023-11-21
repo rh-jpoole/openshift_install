@@ -1,5 +1,6 @@
-registry_binaries_dir: "{{ ansible_env.HOME }}/.{{ configure_cluster_name }}/bin"
-__registry_home: "{{ ansible_env.HOME }}/.{{ configure_cluster_name }}/.registry"
+registry_cluster_name: "{{ openshift_install_cluster_name | mandatory }}"
+registry_binaries_dir: "{{ ansible_env.HOME }}/.{{ registry_cluster_name }}/bin"
+__registry_home: "{{ ansible_env.HOME }}/.{{ registry_cluster_name }}/.registry"
 registry_directory: "{{ openshift_install_registry_directory | default(__registry_home) }}"
 registry_username: "{{ openshift_install_registry_username | default('ansible') }}"
 registry_password: "{{ openshift_install_registry_password | default('ansible') }}"
