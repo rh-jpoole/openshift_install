@@ -1,4 +1,4 @@
-RELEASE?=0.0.1
+RELEASE?=0.0.2
 
 lint:
 	ansible-lint

@@ -8,7 +8,7 @@
       cluster: "{{ lookup('vmware.vmware_rest.cluster_moid', '/{{ configure_datacenter }}/host/{{ configure_cluster }}', **configure_vsphere) }}"
       datastore: "{{ lookup('vmware.vmware_rest.datastore_moid', '/{{ configure_datacenter }}/datastore/{{  configure_datastore }}', **configure_vsphere) }}"
       folder: "{{ lookup('vmware.vmware_rest.folder_moid', '/{{ configure_datacenter }}/omachace', **configure_vsphere) }}"
-    name: "{{ openshift_install_cluster_name }}-{{ item.name }}"
+    name: "{{ configure_cluster_name }}-{{ item.name | mandatory }}"
     guest_OS: RHEL_8_64
     hardware_version: "{{ configure_hardware_version }}"
     memory:
@@ -20,7 +20,7 @@
     disks:
     - type: SATA
       new_vmdk:
-        name: "{{ openshift_install_nodes[0].name }}_disk1"
+        name: "{{ item.name }}_disk1"
         capacity: 120000000000
     cdroms:
     - type: SATA
@@ -80,7 +80,7 @@
     dest: "{{ configure_cluster_home_dir }}/agent-config.yaml"
     mode: "0644"
   vars:
-    __network_prefix: "{{ openshift_install_network | ansible.utils.ipaddr('prefix') }}"
+    __network_prefix: "{{ configure_network | ansible.utils.ipaddr('prefix') }}"
   tags:
     - install-config
 

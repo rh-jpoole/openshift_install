@@ -6,10 +6,10 @@
 
 - name: ssh | Generate a SSH key-pair
   community.crypto.openssh_keypair:
-    path: "~/.ssh/{{ openshift_install_cluster_name }}_id_rsa"
+    path: "~/.ssh/{{ setup_cluster_name }}_id_rsa"
     force: false
-  register: generated_ssh
+  register: __generated_ssh
 
 - name: ssh | Set installer ssh key variable
   ansible.builtin.set_fact:
-    openshift_install_ssh_key: "{{ generated_ssh.public_key }}"
+    openshift_install_ssh_key: "{{ __generated_ssh.public_key }}"

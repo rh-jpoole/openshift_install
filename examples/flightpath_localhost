@@ -1,3 +1,5 @@
+# This inventory will run on local machine and following will be configured:
+# Private registry 
 all:
   hosts:
     localhost:

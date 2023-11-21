@@ -3,14 +3,19 @@ This collection contains roles to install and configure Openshift and its infras
 There are roles to setup external DNS and LoadBalancer. It's using agent based installation
 method.
 
-Collection support following Openshift platforms:
+## Infrastructure support
+
+Openshift platforms:
   - vpshere
 
-Collection support following DNS systems:
+DNS systems:
   - Infoblox
 
-Collection support following LoadBalancer systems:
+LoadBalancer systems:
   - F5
+
+Certificate management systems:
+  - HashiCorp Vault
 
 ## Requirements:
  - Python 3.8
@@ -21,23 +26,42 @@ Following dependencies will be installed by playbook on the node which is used f
 
  - python3-aiohttp (vmware)
  - python3-hvac (hashi vault)
- - hvac
  - infoblox-client (infoblox)
  - nmstate (openshift-install agent)
- - oc
  - openshift-install
+ - oc
 
-## Getting started:
+## Included content
 
-### Install role
+### Roles
+Name | Description
+--- | ---
+[machacekondra.openshfit_install.registry](https://github.com/machacekondra/openshift_install/blob/main/roles/registry/README.md)|Setup the custom containers registry which mirros the Openshift registry.
+[machacekondra.openshfit_install.setup](https://github.com/machacekondra/openshift_install/blob/main/roles/setup/README.md)|Prepare the dependencies to run the installation.
+[machacekondra.openshfit_install.dns](https://github.com/machacekondra/openshift_install/blob/main/roles/dns/README.md)|Configure the DNS for the Openshift nodes.
+[machacekondra.openshfit_install.load_balancer](https://github.com/machacekondra/openshift_install/blob/main/roles/load_balancer/README.md)|Configure load balancer for API/Ingress for Openshift.
+[machacekondra.openshfit_install.configure](https://github.com/machacekondra/openshift_install/blob/main/roles/configure/README.md)|Setup the nodes and run the installation of the Openshift.
 
-The role is available on Ansible Galaxy, to install the role please run following command
+## Installation and Usage
 
+### Installing the Collection from Ansible Galaxy
+
+Before using the Kubernetes collection, you need to install it with the Ansible Galaxy CLI:
+
+```bash
+$ ansible-galaxy collection install machacekondra.openshift_install
 ```
-ansible-galaxy collection install machacekondra.openshift_install
+
+You can also include it in a `requirements.yml` file and install it via `ansible-galaxy collection install -r requirements.yml`, using the format:
+
+```yaml
+---
+collections:
+  - name: machacekondra.openshift_install
+    version: 0.0.1
 ```
 
-### Configure variables
+### Using this collection
 
 There are few mandatory variables which must be specified to configure the infrastructure.
 All the variables are documented in specific roles and also [here](doc/vars.md).
@@ -46,18 +70,15 @@ All the variables are documented in specific roles and also [here](doc/vars.md).
 
 To run the playbook execute following command:
 
-```
-ansible-playbook -i ocp_prod machacekondra.openshift_install.run
+```bash
+$ ansible-playbook -i ocp_prod machacekondra.openshift_install.run
 ```
 
 Where the `ocp_prod` is inventory file, with specified variables for your infrastructure.
 The example inventory files are in `examples` directory.
 
-## Registry
-Custom container registry can be installed and cofigured on any machine on the network so user can use disconnected envirnoment with their registry.
+## Licensing
 
-### Dependencies
-Following dependencies will be installed on the target machine.
- - podman
- - python3-passlib (httpasswd)
+GNU General Public License v3.0 or later.
 
+See [LICENSE](https://www.gnu.org/licenses/gpl-3.0.txt) to see the full text.

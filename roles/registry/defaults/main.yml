@@ -11,3 +11,10 @@ registry_host: "{{ openshift_install_registry_host | default(ansible_hostname) }
 registry_release: "{{ openshift_install_registry_release | default('ocp-release') }}"
 registry_ocp_release: "{{ openshift_install_ocp_release | d('4.15.0-ec.2-x86_64') }}"
 registry_email: "{{ openshift_install_registry_email | default('') }}"
+registry_certificate: "{{ openshift_install_registry_certificate | default('') }}"
+
+registry_certificate_type: "{{ openshift_install_certificate_mgmt | default('vault') }}"
+# For vault certificate mgmt
+registry_vault_role_name: "{{ openshift_install_registry_vault_role_name | default('') }}"
+registry_vault_url: "{{ openshift_install_vault_url | default('') }}"
+registry_vault_token: "{{ openshift_install_vault_token | default('') }}"

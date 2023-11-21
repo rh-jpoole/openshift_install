@@ -28,7 +28,7 @@
     url: "{{ __openshift_client }}"
     dest: "{{ setup_binaries_dir }}/downloads/openshift_client.tar.gz"
     validate_certs: false
-  register: openshift_oc_download
+  register: __openshift_oc_download
 
 - name: binaries | Unarchive openshift_client
   ansible.builtin.unarchive:
@@ -36,7 +36,7 @@
     src: "{{ setup_binaries_dir }}/downloads/openshift_client.tar.gz"
     dest: "{{ setup_binaries_dir }}/bin"
     mode: '0775'
-  when: openshift_oc_download is changed
+  when: __openshift_oc_download is changed
 
 - name: binaries | Download the openshift-install binary
   ansible.builtin.get_url:
@@ -44,8 +44,8 @@
     url: "{{ __openshift_install }}"
     dest: "{{ setup_binaries_dir }}/downloads/openshift_install.tar.gz"
     validate_certs: false
-  register: openshift_install_download
-  when: not openshift_install_registry | d(false)
+  register: __openshift_install_download
+  when: not setup_install_registry
 
 - name: binaries | Unarchive openshift-install
   ansible.builtin.unarchive:
@@ -55,5 +55,5 @@
     mode: '0775'
     exclude:
       - README.md
-  when: openshift_install_download is changed
+  when: __openshift_install_download is changed
   

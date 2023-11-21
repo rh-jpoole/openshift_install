@@ -3,8 +3,13 @@
     name:
       - nmstate
       - podman
-      - python3-aiohttp
       - python3-hvac
       - python3-passlib
-      # infloblox-client using pip
+      - python3-pip
   become: true
+
+- name: dependencies | Install the necessary pip packages which will be needed later in the ansible run
+  ansible.builtin.pip:
+    name:
+      - infoblox-client
+      - aiohttp

@@ -25,9 +25,11 @@ platform:
     datacenter: {{ configure_datacenter }}
     defaultDatastore: {{ configure_datastore }}
     cluster: {{ configure_cluster }}
-    folder: {{ configure_folder }}
     apiVIPs: ['1.2.3.4']
     ingressVIPs: ['1.2.3.5']
+{% if configure_folder != '' %}
+    folder: {{ configure_folder }}
+{% endif %}
 pullSecret: '{{ configure_pull_secret | tojson | safe }}'
 sshKey: '{{ configure_ssh_key }}'
 additionalTrustBundle: |

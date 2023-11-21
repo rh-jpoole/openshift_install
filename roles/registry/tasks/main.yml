@@ -5,38 +5,9 @@
     mode: '0755'
   with_items: ["auth", "certs", "data"]
 
-- name: Generate RSA private key
-  community.crypto.openssl_privatekey:
-    path: "{{ registry_directory }}/certs/domain.key"
-    size: 4096
-    type: RSA
-
-- name: Generate a CSR (Certificate Signing Request)
-  community.crypto.openssl_csr:
-    path: "{{ registry_directory }}/certs/domain.csr"
-    privatekey_path: "{{ registry_directory }}/certs/domain.key"
-    subject:
-      commonName: "{{ registry_host }}"
-      countryName: "US"
-      stateOrProvinceName: "NC"
-      localityName: "Raleigh"
-      organizationName: "Red Hat"
-    key_usage:
-      - keyCertSign
-      - cRLSign
-    basic_constraints:
-      - "CA:TRUE"
-    subject_alt_name:
-      - "DNS:{{ registry_host }}"
-      - "DNS:{{ registry_host.split('.')[0] }}"
-
-- name: Create a certificate
-  community.crypto.x509_certificate:
-    path: "{{ registry_directory }}/certs/domain.crt"
-    privatekey_path: "{{ registry_directory }}/certs/domain.key"
-    csr_path: "{{ registry_directory }}/certs/domain.csr"
-    provider: selfsigned
-    selfsigned_not_after: +3650d
+- name: Generate certificate
+  ansible.builtin.import_tasks: request_certificate_vault.yml
+  when: registry_certificate_type == 'vault'
 
 - name: Create htpasswd file
   community.general.htpasswd:
@@ -95,17 +66,20 @@
     content: "{{ __registry_pull_secret }}"
   register: __pull_secret_file
 
-- name: Mirror the registry # noqa no-changed-when
-  ansible.builtin.command: >
-    "{{ registry_binaries_dir }}/oc" adm -a "{{ __pull_secret_file.dest }}" release mirror --insecure=true
-    --from=quay.io/{{ registry_product_repo }}/{{ registry_release }}:{{ registry_ocp_release }}
-    --to={{ registry_host }}:{{ registry_port }}/{{ registry_repo }}
-    --to-release-image={{ registry_host }}:{{ registry_port }}/{{ registry_repo }}:{{ registry_release }}
+- name: X
+  when: false
+  block:
+  - name: Mirror the registry # noqa no-changed-when
+    ansible.builtin.command: >
+      "{{ registry_binaries_dir }}/oc" adm -a "{{ __pull_secret_file.dest }}" release mirror --insecure=true
+      --from=quay.io/{{ registry_product_repo }}/{{ registry_release }}:{{ registry_ocp_release }}
+      --to={{ registry_host }}:{{ registry_port }}/{{ registry_repo }}
+      --to-release-image={{ registry_host }}:{{ registry_port }}/{{ registry_repo }}:{{ registry_release }}
 
-- name: Extract openshift-install from registry # noqa no-changed-when
-  ansible.builtin.command: >
-    "{{ registry_binaries_dir }}/oc" adm -a "{{ __pull_secret_file.dest }}" --insecure=true
-    release extract
-    --command=openshift-install
-    --to={{ registry_binaries_dir }}
-    "{{ registry_host }}:{{ registry_port }}/{{ registry_repo }}:{{ registry_release }}"
+  - name: Extract openshift-install from registry # noqa no-changed-when
+    ansible.builtin.command: >
+      "{{ registry_binaries_dir }}/oc" adm -a "{{ __pull_secret_file.dest }}" --insecure=true
+      release extract
+      --command=openshift-install
+      --to={{ registry_binaries_dir }}
+      "{{ registry_host }}:{{ registry_port }}/{{ registry_repo }}:{{ registry_release }}"

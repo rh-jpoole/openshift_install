@@ -4,7 +4,7 @@ configure_datacenter: "{{ openshift_install_datacenter | mandatory }}"
 configure_cluster: "{{ openshift_install_cluster | mandatory }}"
 configure_datastore: "{{ openshift_install_datastore | mandatory }}"
 configure_network_name: "{{ openshift_install_network_name | mandatory }}"
-configure_folder: "{{ openshift_install_folder | mandatory }}"
+configure_folder: "{{ openshift_install_folder | default('') }}"
 
 configure_vault_secret_vsphere: "{{ openshift_install_vault_secret_vsphere }}"
 configure_vsphere: "{{ openshift_install_vsphere | d(lookup('community.hashi_vault.hashi_vault', 'secret={{ configure_vault_secret_vsphere }} token={{ openshift_install_vault_token }} validate_certs=false url={{ openshift_install_vault_url }}')) }}"

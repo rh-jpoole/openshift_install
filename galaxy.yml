@@ -2,7 +2,7 @@ namespace: machacekondra
 
 name: openshift_install
 
-version: 0.0.1
+version: 0.0.2
 
 readme: README.md
 
@@ -27,9 +27,9 @@ dependencies: {
   "infoblox.nios_modules": ">=1.5.0",
   "f5networks.f5_modules": ">=1.27.0",
   "vmware.vmware_rest": ">=2.3.1",
-  "community.vmware": ">=3.11.1",
+  "community.vmware": ">=4.0.0",
   "community.hashi_vault": ">=5.0.0",
-  "containers.podman.": "1.11.0"
+  "containers.podman": "1.11.0"
 }
 
 # The URL of the originating SCM repository

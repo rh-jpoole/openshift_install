@@ -9,7 +9,7 @@
 
 - name: Configure an A record for machines
   infoblox.nios_modules.nios_a_record:
-    name: "{{ item.name }}.{{ dns_zone }}"
+    name: "{{ item.name | mandatory }}.{{ dns_zone }}"
     ipv4: "{{ item.ipaddr }}"
     state: present
     provider: "{{ dns_provider }}"
