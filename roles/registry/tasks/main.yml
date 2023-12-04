@@ -66,20 +66,17 @@
     content: "{{ __registry_pull_secret }}"
   register: __pull_secret_file
 
-- name: X
-  when: false
-  block:
-  - name: Mirror the registry # noqa no-changed-when
-    ansible.builtin.command: >
-      "{{ registry_binaries_dir }}/oc" adm -a "{{ __pull_secret_file.dest }}" release mirror --insecure=true
-      --from=quay.io/{{ registry_product_repo }}/{{ registry_release }}:{{ registry_ocp_release }}
-      --to={{ registry_host }}:{{ registry_port }}/{{ registry_repo }}
-      --to-release-image={{ registry_host }}:{{ registry_port }}/{{ registry_repo }}:{{ registry_release }}
+- name: Mirror the registry # noqa no-changed-when
+  ansible.builtin.command: >
+    "{{ registry_binaries_dir }}/oc" adm -a "{{ __pull_secret_file.dest }}" release mirror --insecure=true
+    --from=quay.io/{{ registry_product_repo }}/{{ registry_release }}:{{ registry_ocp_release }}
+    --to={{ registry_host }}:{{ registry_port }}/{{ registry_repo }}
+    --to-release-image={{ registry_host }}:{{ registry_port }}/{{ registry_repo }}:{{ registry_release }}
 
-  - name: Extract openshift-install from registry # noqa no-changed-when
-    ansible.builtin.command: >
-      "{{ registry_binaries_dir }}/oc" adm -a "{{ __pull_secret_file.dest }}" --insecure=true
-      release extract
-      --command=openshift-install
-      --to={{ registry_binaries_dir }}
-      "{{ registry_host }}:{{ registry_port }}/{{ registry_repo }}:{{ registry_release }}"
+- name: Extract openshift-install from registry # noqa no-changed-when
+  ansible.builtin.command: >
+    "{{ registry_binaries_dir }}/oc" adm -a "{{ __pull_secret_file.dest }}" --insecure=true
+    release extract
+    --command=openshift-install
+    --to={{ registry_binaries_dir }}
+    "{{ registry_host }}:{{ registry_port }}/{{ registry_repo }}:{{ registry_release }}"

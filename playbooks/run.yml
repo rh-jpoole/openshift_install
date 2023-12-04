@@ -20,3 +20,7 @@
     - role: configure
       tags:
         - install
+    - role: post_install
+      tags:
+        - post_install
+      when: openshift_install_post_install | d(false)

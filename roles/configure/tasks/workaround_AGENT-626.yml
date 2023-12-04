@@ -20,3 +20,22 @@
     state: absent
     path: "{{ configure_cluster_home_dir }}/cluster-manifests/agent-cluster-install.yaml"
     regexp: "ingressVIP:"
+
+# WA for 4.13+
+# WA for 4.14+
+- name: Workaround | Set vsphere openshift-intall
+  ansible.builtin.lineinfile:
+    path: "{{ configure_cluster_home_dir }}/cluster-manifests/agent-cluster-install.yaml"
+    firstmatch: true
+    insertafter: "metadata:$"
+    line: "  annotations:\n    agent-install.openshift.io/install-config-overrides: '{\"platform\":{\"vsphere\":{\"vcenters\":[{\"server\":\"{{ configure_vsphere.vcenter_hostname }}\",\"port\":443,\"username\":\"{{ configure_vsphere.vcenter_username }}\",\"password\":\"{{ configure_vsphere.vcenter_password }}\",\"datacenters\":[\"DC-Practice-Lab\"]}],\"failureDomains\":[{\"name\":\"generated-failure-domain\",\"region\":\"generated-region\",\"zone\":\"generated-zone\",\"server\":\"{{ configure_vsphere.vcenter_hostname }}\",\"topology\":{\"datacenter\":\"DC-Practice-Lab\",\"computeCluster\":\"/DC-Practice-Lab/host/Practice-Lab-Cluster\",\"networks\":[\"\"],\"datastore\":\"/DC-Practice-Lab/datastore/pool0-ceph-storage\",\"resourcePool\":\"/DC-Practice-Lab/host/Practice-Lab-Cluster//Resources\",\"folder\":\"/DC-Practice-Lab/vm/omachace\"}}]}}}'"
+  when: configure_registry_cert == ''
+
+- name: Workaround | Set vsphere openshift-intall
+  ansible.builtin.lineinfile:
+    path: "{{ configure_cluster_home_dir }}/cluster-manifests/agent-cluster-install.yaml"
+    regexp: '(.*agent-install.openshift.io/install-config-overrides:.*)additionalTrustBundle(.*)'
+    insertbefore: 'additionalTrustBundle'
+    line: '\1platform":{"vsphere":{"vcenters":[{"server":"{{ configure_vsphere.vcenter_hostname }}","port":443,"username":"{{ configure_vsphere.vcenter_username }}","password":"{{ configure_vsphere.vcenter_password }}","datacenters":["DC-Practice-Lab"]}],"failureDomains":[{"server":"{{ configure_vsphere.vcenter_hostname }}","topology":{"datacenter":"DC-Practice-Lab","computeCluster":"/DC-Practice-Lab/host/Practice-Lab-Cluster","datastore":"pool0-ceph-storage","folder":"/DC-Practice-Lab/vm/omachace"}}]}},"additionalTrustBundle\2'
+    backrefs: yes
+  when: configure_registry_cert != ''

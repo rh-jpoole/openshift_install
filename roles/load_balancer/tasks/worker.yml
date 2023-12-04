@@ -13,7 +13,8 @@
     host: "{{ item.ipaddr }}"
     port: 443
     provider: "{{ load_balancer_provider }}"
-  loop: "{{ openshift_install_nodes }}"
+  loop: "{{ openshift_install_nodes | selectattr('role', 'equalto', 'worker') }}"
+  # FIXME: if empty use masters
 
 - name: worker | Add virtual server for worker
   f5networks.f5_modules.bigip_virtual_server:

@@ -8,7 +8,7 @@
       cluster: "{{ lookup('vmware.vmware_rest.cluster_moid', '/{{ configure_datacenter }}/host/{{ configure_cluster }}', **configure_vsphere) }}"
       datastore: "{{ lookup('vmware.vmware_rest.datastore_moid', '/{{ configure_datacenter }}/datastore/{{  configure_datastore }}', **configure_vsphere) }}"
       folder: "{{ lookup('vmware.vmware_rest.folder_moid', '/{{ configure_datacenter }}/omachace', **configure_vsphere) }}"
-    name: "{{ configure_cluster_name }}-{{ item.name | mandatory }}"
+    name: "{{ configure_cluster_name }}-{{ item.role | default('master') }}-{{ item.name | mandatory }}"
     guest_OS: RHEL_8_64
     hardware_version: "{{ configure_hardware_version }}"
     memory:
@@ -38,7 +38,15 @@
       backing:
         type: DISTRIBUTED_PORTGROUP
         network: "{{ lookup('vmware.vmware_rest.network_moid', '/{{ configure_datacenter }}/network/{{ configure_network_name }}', **configure_vsphere) }}"
-    power_on: true
+    #############################################################
+    # Remove - workround for vcenter is on different network 
+    #############################################################
+    - mac_type: GENERATED
+      start_connected: true
+      backing:
+        type: DISTRIBUTED_PORTGROUP
+        network: "{{ lookup('vmware.vmware_rest.network_moid', '/{{ configure_datacenter }}/network/vlan-202 - DPortGroup', **configure_vsphere) }}"
+    #############################################################
   loop: "{{ openshift_install_nodes }}"
 
 - name: Setup | Fetch VMs MAC addresses
@@ -62,6 +70,19 @@
     state: directory
   tags:
     - install-config
+
+- name: Setup | Ensure the openshift folder exists
+  ansible.builtin.file:
+    path: "{{ configure_cluster_home_dir }}/openshift"
+    state: directory
+
+- name: Setup | Copy manifests
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "{{ configure_cluster_home_dir }}/openshift/{{ item }}"
+    mode: "0644"
+  loop:
+    - gitops.yml
 
 - name: Setup | Generate install-config.yaml
   ansible.builtin.template:

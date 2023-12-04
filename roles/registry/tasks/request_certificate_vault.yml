@@ -2,7 +2,7 @@
   community.hashi_vault.vault_pki_generate_certificate:
     role_name: "{{ registry_vault_role_name }}"
     common_name: "{{ registry_host }}"
-    ttl: 3650d
+    ttl: "{{ registry_certificate_ttl }}"
     url: "{{ registry_vault_url }}"
     auth_method: token
     token: "{{ registry_vault_token }}"
@@ -21,3 +21,8 @@
   ansible.builtin.copy:
     content: "{{ __cert_data.data.data.private_key }}"
     dest: "{{ registry_directory }}/certs/domain.key"
+
+- name: Write a ca cert
+  ansible.builtin.copy:
+    content: "{{ __cert_data.data.data.issuing_ca }}"
+    dest: "{{ registry_directory }}/certs/ca.crt"

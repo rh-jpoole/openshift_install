@@ -1,0 +1,2 @@
+- name: Custom certificate
+  ansible.builtin.import_tasks: custom_certificate.yml

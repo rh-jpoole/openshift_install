@@ -29,7 +29,8 @@ dependencies: {
   "vmware.vmware_rest": ">=2.3.1",
   "community.vmware": ">=4.0.0",
   "community.hashi_vault": ">=5.0.0",
-  "containers.podman": "1.11.0"
+  "containers.podman": ">=1.11.0",
+  "kubernetes.core.k8s:": ">=2.4.0"
 }
 
 # The URL of the originating SCM repository

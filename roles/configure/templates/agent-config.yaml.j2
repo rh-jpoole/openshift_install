@@ -17,7 +17,10 @@ hosts:
           state: up
           ipv4:
             enabled: true
-{% if not openshift_install_dhcp %}
+{% if configure_dns_servers | length > 0 %}
+            auto-dns: false
+{% endif %}
+{% if not configure_dhcp %}
             address:
               - ip: {{ node.ipaddr }}
                 prefix-length: {{ __network_prefix | default(24) }}

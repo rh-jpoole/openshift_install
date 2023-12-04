@@ -27,9 +27,27 @@ class FilterModule(object):
             'product_release_version': self.product_release_version,
             'combine_pull_secret': self.combine_pull_secret,
             'create_pull_secret': self.create_pull_secret,
+            'vsphere_nics': self.vsphere_nics,
         }
+    
+    def vsphere_nics(self, networks):
+        # Takes as input openshift_install_network variable
+        # and convert it to vsphere vm module nics parameter
+        #
+        ret = []
+        for n in networks:
+            nic = {}
+            nic['mac_type'] = 'MANUAL' if n.get('macaddr') else 'GENERATED'
+            nic['start_connected'] = True
+            if n.get('macaddr'):
+                nic['mac_address'] = n['macaddr']
+            nic['backing'] = {}
+            nic['backing']['type'] = 'DISTRIBUTED_PORTGROUP'
+            nic['backing']['network'] = n['network']
+            ret.append(nic)
+        return ret
 
-    def create_pull_secret(self, host, creds, email):
+    def create_pull_secret(self, pull_secret ,host, creds, email):
         return {"auths": {host: {"auth": creds, "email": email}}}
 
     def combine_pull_secret(self, pull_secret, host, creds, email):
@@ -45,7 +63,7 @@ class FilterModule(object):
             ip = wapi.get_object('record:a', {'name': n['name'] + '.' + cl_name + '.' + domain_name })
             if ip:
                 n['ipaddr'] = ip[0]['ipv4addr']
-                ret.append(n)
+            ret.append(n)
         return ret
 
     def cluster_base_version(self, cluster_version):
@@ -99,7 +117,8 @@ class FilterModule(object):
     async def __fetch_vm_ids(self, nodes, cl_name, **kwargs):
         for node in nodes:
             session = await self.__get_session(**kwargs)
-            vm_id = await self._fetch_vm_id(session, cl_name + '-' + node['name'], kwargs.get('vcenter_hostname'))
+            role = node.get('role', 'master')
+            vm_id = await self._fetch_vm_id(session, cl_name + '-' + role + '-' + node['name'], kwargs.get('vcenter_hostname'))
             if vm_id:
                 self._vm_ids.append(vm_id)
 
@@ -138,7 +157,8 @@ class FilterModule(object):
 
     async def _fetch_macs(self, openshift_nodes, cl_name, **kwargs):
         for vm in openshift_nodes:
-            mac = await self._fetch_mac(cl_name + '-' + vm['name'], **kwargs)
+            role = vm.get('role', 'master')
+            mac = await self._fetch_mac(cl_name + '-' + role + '-' + vm['name'], **kwargs)
             if mac:
                 vm['macaddr'] = mac
             self._openshift_nodes.append(vm)

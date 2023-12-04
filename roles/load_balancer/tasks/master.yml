@@ -21,7 +21,7 @@
     host: "{{ item.ipaddr }}"
     port: 6443
     provider: "{{ load_balancer_provider }}"
-  loop: "{{ openshift_install_nodes }}"
+  loop: "{{ openshift_install_nodes | selectattr('role', 'equalto', 'master') }}"
 
 - name: master | Add virtual server for master
   f5networks.f5_modules.bigip_virtual_server:

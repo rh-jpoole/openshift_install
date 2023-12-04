@@ -1,6 +1,6 @@
 - name: Include registry
   ansible.builtin.import_tasks: registry.yml
-  when: openshift_install_registry | d(false)
+  when: configure_registry_cert is not defined or configure_registry_cert == ''
   tags:
     - registry
 

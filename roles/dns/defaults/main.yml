@@ -1,7 +1,8 @@
 dns_zone: "{{ openshift_install_cluster_name | mandatory }}.{{ openshift_install_base_domain | mandatory }}"
 dns_primary_grid: "{{ openshift_install_dns_primary_grid | mandatory }}"
 dns_network_view: "{{ openshift_install_dns_network_view | d('default') }}"
-dns_network: "{{ openshift_install_network | mandatory }}"
+dns_network: "{{ openshift_install_network }}"
 dns_dhcp_enabled: "{{ openshift_install_dhcp | default('false') | bool }}"
+dns_nodes: "{{ openshift_install_nodes | mandatory }}"
 
 dns_provider: "{{ openshift_install_dns | d(lookup('community.hashi_vault.hashi_vault', 'secret={{ openshift_install_vault_secret_dns }} token={{ openshift_install_vault_token }} validate_certs=false url={{ openshift_install_vault_url }}')) }}"

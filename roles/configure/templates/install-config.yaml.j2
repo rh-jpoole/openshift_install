@@ -27,10 +27,10 @@ platform:
     cluster: {{ configure_cluster }}
     apiVIPs: ['1.2.3.4']
     ingressVIPs: ['1.2.3.5']
-{% if configure_folder != '' %}
     folder: {{ configure_folder }}
-{% endif %}
 pullSecret: '{{ configure_pull_secret | tojson | safe }}'
 sshKey: '{{ configure_ssh_key }}'
+{% if configure_registry_cert is defined and configure_registry_cert != '' %}
 additionalTrustBundle: |
     {{ configure_registry_cert | indent(4) }}
+{% endif %}
