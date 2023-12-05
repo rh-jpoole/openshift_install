@@ -1,13 +1,27 @@
-name: ansible-lint
+---
+name: Ansible Lint
 on:
   pull_request:
-    branches: ["main"]
+  merge_group:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+permissions:
+  contents: read
 jobs:
-  build:
-    name: Ansible tests
+  ansible_lint:
     runs-on: ubuntu-latest
     steps:
-      - name: Perform sanity testing with ansible-test
-        uses: ansible-community/ansible-test-gh-action@release/v1
-        with:
-          ansible-core-version: stable-2.14
+      - name: Update pip, git
+        run: |
+          set -euxo pipefail
+          sudo apt update
+          sudo apt install -y git
+
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Run ansible-lint
+        uses: ansible-community/ansible-lint-action@v6
