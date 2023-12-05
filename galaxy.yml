@@ -29,6 +29,7 @@ dependencies: {
   "vmware.vmware_rest": ">=2.3.1",
   "community.vmware": ">=4.0.0",
   "community.hashi_vault": ">=5.0.0",
+  "community.general": ">=8.0.2",
   "containers.podman": ">=1.11.0",
   "kubernetes.core": ">=2.4.0"
 }
