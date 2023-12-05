@@ -64,7 +64,7 @@ collections:
 ### Using this collection
 
 There are few mandatory variables which must be specified to configure the infrastructure.
-All the variables are documented in specific roles and also [here](doc/vars.md).
+All the variables are documented in specific roles and also [here](docs/vars.md).
 
 ## Execution
 
