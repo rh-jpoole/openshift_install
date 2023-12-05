@@ -2,22 +2,22 @@ namespace: machacekondra
 
 name: openshift_install
 
-version: 0.0.2
+version: 1.0.0
 
 readme: README.md
 
 authors:
-- Ondra Machacek <omachace@redhat.com>
+  - Ondra Machacek <omachace@redhat.com>
 
 ### OPTIONAL but strongly recommended
 description: Install the Openshift on baremetal/vsphere using agent-install. Configure DNS/LB infrastructure.
 
 license:
-- GPL-2.0-or-later
+  - GPL-2.0-or-later
 
 license_file: ''
 
-tags: ['openshift', 'vmware', 'infoblox', 'f5']
+tags: ['openshift', 'vmware', 'infoblox', 'f5', 'infrastructure']
 
 # Collections that this collection requires to be installed for it to be usable. The key of the dict is the
 # collection label 'namespace.name'. The value is a version range
@@ -30,7 +30,7 @@ dependencies: {
   "community.vmware": ">=4.0.0",
   "community.hashi_vault": ">=5.0.0",
   "containers.podman": ">=1.11.0",
-  "kubernetes.core.k8s:": ">=2.4.0"
+  "kubernetes.core": ">=2.4.0"
 }
 
 # The URL of the originating SCM repository

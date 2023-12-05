@@ -18,40 +18,45 @@
       count: "{{ configure_master_cpu_count }}"
       cores_per_socket: "{{ configure_master_cpu_cps }}"
     disks:
-    - type: SATA
-      new_vmdk:
-        name: "{{ item.name }}_disk1"
-        capacity: 120000000000
+      - type: SATA
+        new_vmdk:
+          name: "{{ item.name }}_disk1"
+          capacity: 120000000000
     cdroms:
-    - type: SATA
-      start_connected: true
-      backing:
-        type: ISO_FILE
-        iso_file: "[{{ configure_datastore }}] ISO/{{ configure_cluster_name }}-boot-iso.iso"
-      sata:
-        bus: 0
-        unit: 2
+      - type: SATA
+        start_connected: true
+        backing:
+          type: ISO_FILE
+          iso_file: "[{{ configure_datastore }}] ISO/{{ configure_cluster_name }}-boot-iso.iso"
+        sata:
+          bus: 0
+          unit: 2
     nics:
-    - mac_type: "{{ 'MANUAL' if item.macaddr is defined else 'GENERATED' }}"
-      start_connected: true
-      mac_address: "{{ item.macaddr | default(omit) }}"
-      backing:
-        type: DISTRIBUTED_PORTGROUP
-        network: "{{ lookup('vmware.vmware_rest.network_moid', '/{{ configure_datacenter }}/network/{{ configure_network_name }}', **configure_vsphere) }}"
-    #############################################################
-    # Remove - workround for vcenter is on different network 
-    #############################################################
-    - mac_type: GENERATED
-      start_connected: true
-      backing:
-        type: DISTRIBUTED_PORTGROUP
-        network: "{{ lookup('vmware.vmware_rest.network_moid', '/{{ configure_datacenter }}/network/vlan-202 - DPortGroup', **configure_vsphere) }}"
-    #############################################################
+      - mac_type: "{{ 'MANUAL' if item.macaddr is defined else 'GENERATED' }}"
+        start_connected: true
+        mac_address: "{{ item.macaddr | default(omit) }}"
+        backing:
+          type: DISTRIBUTED_PORTGROUP
+          network: "{{ lookup('vmware.vmware_rest.network_moid', '/{{ configure_datacenter }}/network/{{ configure_network_name }}', **configure_vsphere) }}"
+      #############################################################
+      # Remove - workround for vcenter is on different network
+      #############################################################
+      - mac_type: GENERATED
+        start_connected: true
+        backing:
+          type: DISTRIBUTED_PORTGROUP
+          network: "{{ lookup('vmware.vmware_rest.network_moid', '/{{ configure_datacenter }}/network/vlan-202 - DPortGroup', **configure_vsphere) }}"
+      #############################################################
   loop: "{{ openshift_install_nodes }}"
 
 - name: Setup | Fetch VMs MAC addresses
   ansible.builtin.set_fact:
-    openshift_install_nodes: "{{ openshift_install_nodes | machacekondra.openshift_install.fetch_macaddrs(cl_name=configure_cluster_name, **configure_vsphere) }}"
+    openshift_install_nodes: >
+      "{{ openshift_install_nodes |
+      machacekondra.openshift_install.fetch_macaddrs(
+        cl_name=configure_cluster_name,
+        **configure_vsphere
+      ) }}"
   tags:
     - install-config
 
@@ -63,7 +68,6 @@
     - install-config
 
 ################################################################################################################################################################################
-
 - name: Setup | Ensure the cluster folder exists
   ansible.builtin.file:
     path: "{{ configure_cluster_home_dir }}"
@@ -121,6 +125,7 @@
 - name: Setup | Create ISO image
   ansible.builtin.command: "{{ configure_install_binary }} agent create image --dir={{ configure_cluster_home_dir }}"
   when: not iso_file.stat.exists
+  changed_when: false
   tags:
     - create-iso
 

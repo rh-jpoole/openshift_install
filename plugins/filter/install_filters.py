@@ -29,7 +29,7 @@ class FilterModule(object):
             'create_pull_secret': self.create_pull_secret,
             'vsphere_nics': self.vsphere_nics,
         }
-    
+
     def vsphere_nics(self, networks):
         # Takes as input openshift_install_network variable
         # and convert it to vsphere vm module nics parameter
@@ -47,7 +47,7 @@ class FilterModule(object):
             ret.append(nic)
         return ret
 
-    def create_pull_secret(self, pull_secret ,host, creds, email):
+    def create_pull_secret(self, pull_secret, host, creds, email):
         return {"auths": {host: {"auth": creds, "email": email}}}
 
     def combine_pull_secret(self, pull_secret, host, creds, email):
@@ -60,7 +60,7 @@ class FilterModule(object):
 
         ret = []
         for n in nodes:
-            ip = wapi.get_object('record:a', {'name': n['name'] + '.' + cl_name + '.' + domain_name })
+            ip = wapi.get_object('record:a', {'name': n['name'] + '.' + cl_name + '.' + domain_name})
             if ip:
                 n['ipaddr'] = ip[0]['ipv4addr']
             ret.append(n)

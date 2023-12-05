@@ -1,6 +1,7 @@
 # Workaround for https://issues.redhat.com/browse/AGENT-626
 - name: Workaround | Create cluster manifests
   ansible.builtin.command: "{{ configure_install_binary }} agent create cluster-manifests --dir={{ configure_cluster_home_dir }}"
+  changed_when: false
 
 - name: Workaround | Set userManagedNetworking
   ansible.builtin.lineinfile:
@@ -37,5 +38,5 @@
     regexp: '(.*agent-install.openshift.io/install-config-overrides:.*)additionalTrustBundle(.*)'
     insertbefore: 'additionalTrustBundle'
     line: '\1platform":{"vsphere":{"vcenters":[{"server":"{{ configure_vsphere.vcenter_hostname }}","port":443,"username":"{{ configure_vsphere.vcenter_username }}","password":"{{ configure_vsphere.vcenter_password }}","datacenters":["DC-Practice-Lab"]}],"failureDomains":[{"server":"{{ configure_vsphere.vcenter_hostname }}","topology":{"datacenter":"DC-Practice-Lab","computeCluster":"/DC-Practice-Lab/host/Practice-Lab-Cluster","datastore":"pool0-ceph-storage","folder":"/DC-Practice-Lab/vm/omachace"}}]}},"additionalTrustBundle\2'
-    backrefs: yes
+    backrefs: true
   when: configure_registry_cert != ''

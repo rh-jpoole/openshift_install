@@ -38,7 +38,11 @@ configure_install_binary: "{{ openshift_install_binary | d(configure_binaries_di
 # DHCP
 configure_dhcp: "{{ openshift_install_dhcp | default('false') | bool }}"
 configure_dhcp_reservation: "{{ openshift_install_dhcp_reservation | default('true') | bool }}"
-configure_dns_provider: "{{ openshift_install_dns | d(lookup('community.hashi_vault.hashi_vault', 'secret={{ openshift_install_vault_secret_dns }} token={{ openshift_install_vault_token }} validate_certs=false url={{ openshift_install_vault_url }}')) }}"
+configure_dns_provider: "{{ openshift_install_dns |
+  d(lookup('community.hashi_vault.hashi_vault',
+           'secret={{ openshift_install_vault_secret_dns }}
+            token={{ openshift_install_vault_token }}
+            validate_certs=false url={{ openshift_install_vault_url }}')) }}"
 
 #
 configure_cluster_home_dir_def: "{{ ansible_env.HOME }}/.{{ openshift_install_cluster_name }}"
@@ -46,8 +50,8 @@ configure_cluster_home_dir: "{{ openshift_install_cluster_home_dir | d(configure
 
 # Registry
 configure_ocp_release: "{{ openshift_install_ocp_release | d('4.15.0-ec.2-x86_64') }}"
-__registry_home: "{{ ansible_env.HOME }}/.{{ configure_cluster_name }}/.registry"
-configure_registry_directory: "{{ openshift_install_registry_directory | default(__registry_home) }}"
+configure_registry_home: "{{ ansible_env.HOME }}/.{{ configure_cluster_name }}/.registry"
+configure_registry_directory: "{{ openshift_install_registry_directory | default(configure_registry_home) }}"
 configure_registry_cert: "{{ openshift_install_ca_crt | d('') }}"
 configure_registry_username: "{{ openshift_install_registry_username | default('ansible') }}"
 configure_registry_password: "{{ openshift_install_registry_password | default('ansible') }}"
