@@ -23,5 +23,10 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
+      - name: Update pip, git
+        run: |
+          set -euxo pipefail
+          ansible-galaxy collection install -r tests/unit/requirements.yml -p $GITHUB_WORKSPACE/ansible_collections/ --force
+
       - name: Run ansible-lint
         uses: ansible-community/ansible-lint-action@v6

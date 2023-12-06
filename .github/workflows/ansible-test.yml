@@ -28,6 +28,7 @@ jobs:
         run: |
           set -euxo pipefail
           pip3 install "git+https://github.com/linux-system-roles/tox-lsr@3.1.1"
+          ansible-galaxy collection install -r tests/unit/requirements.yml -p $GITHUB_WORKSPACE/ansible_collections/ --force
 
       - name: Run ansible-test
         uses: ansible-community/ansible-test-gh-action@release/v1
