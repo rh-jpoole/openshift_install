@@ -1,3 +1,5 @@
+[![Ansible Integration Test](https://github.com/machacekondra/openshift_install/actions/workflows/ansible-test-integration.yml/badge.svg?branch=main)](https://github.com/machacekondra/openshift_install/actions/workflows/ansible-test-integration.yml)
+
 # Openshift install collection
 This collection contains roles to install and configure Openshift and its infrastructure.
 There are roles to setup external DNS and LoadBalancer. It's using agent based installation

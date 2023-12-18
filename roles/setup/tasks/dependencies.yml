@@ -7,11 +7,11 @@
       - python3-passlib
       - python3-pip
       - python3-kubernetes
+      - python3-netaddr
+      - python3-aiohttp
   become: true
 
 - name: dependencies | Install the necessary pip packages which will be needed later in the ansible run
   ansible.builtin.pip:
     name:
       - infoblox-client
-      - aiohttp
-      - kubernetes

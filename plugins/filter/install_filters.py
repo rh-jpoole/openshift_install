@@ -163,23 +163,6 @@ class FilterModule(object):
                 vm['macaddr'] = mac
             self._openshift_nodes.append(vm)
 
-    async def _fetch_vm_id(self, session, vm, vcenter_hostname):
-        # Fetch vm id
-        vm_encode = '?names=' + urllib.parse.quote(vm)
-        async with session.get("https://{0}/api/vcenter/vm{1}".format(vcenter_hostname, vm_encode)) as resp:
-            _json = await resp.json()
-            if len(_json) > 0 and 'vm' in _json[0]:
-                return _json[0]['vm']
-
-    async def __get_session(self, **kwargs):
-        creds = get_credentials(**kwargs)
-        return await open_session(
-            vcenter_hostname=creds.get('vcenter_hostname'),
-            vcenter_username=creds.get('vcenter_username'),
-            vcenter_password=creds.get('vcenter_password'),
-            validate_certs=creds.get('vcenter_validate_certs', False),
-        )
-
     async def _fetch_mac(self, vm, **kwargs):
         vcenter_hostname = kwargs.get('vcenter_hostname')
         session = await self.__get_session(**kwargs)
@@ -201,3 +184,20 @@ class FilterModule(object):
         async with session.get("https://{0}/api/vcenter/vm/{1}/hardware/ethernet/{2}".format(vcenter_hostname, vm_id, nic)) as resp:
             _json = await resp.json()
             return _json['mac_address']
+
+    async def _fetch_vm_id(self, session, vm, vcenter_hostname):
+        # Fetch vm id
+        vm_encode = '?names=' + urllib.parse.quote(vm)
+        async with session.get("https://{0}/api/vcenter/vm{1}".format(vcenter_hostname, vm_encode)) as resp:
+            _json = await resp.json()
+            if len(_json) > 0 and 'vm' in _json[0]:
+                return _json[0]['vm']
+
+    async def __get_session(self, **kwargs):
+        creds = get_credentials(**kwargs)
+        return await open_session(
+            vcenter_hostname=creds.get('vcenter_hostname'),
+            vcenter_username=creds.get('vcenter_username'),
+            vcenter_password=creds.get('vcenter_password'),
+            validate_certs=creds.get('vcenter_validate_certs', False),
+        )

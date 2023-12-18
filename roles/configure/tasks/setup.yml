@@ -51,12 +51,8 @@
 
 - name: Setup | Fetch VMs MAC addresses
   ansible.builtin.set_fact:
-    openshift_install_nodes: >
-      "{{ openshift_install_nodes |
-      machacekondra.openshift_install.fetch_macaddrs(
-        cl_name=configure_cluster_name,
-        **configure_vsphere
-      ) }}"
+    openshift_install_nodes: "{{ openshift_install_nodes | machacekondra.openshift_install.fetch_macaddrs(cl_name=configure_cluster_name, **configure_vsphere) }}"
+  when: openshift_install_nodes | selectattr('macaddr', 'defined') | length == 0
   tags:
     - install-config
 

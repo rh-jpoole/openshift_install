@@ -28,7 +28,7 @@ configure_network: "{{ openshift_install_network | mandatory }}"
 configure_base_domain: "{{ openshift_install_base_domain | mandatory }}"
 configure_cluster_name: "{{ openshift_install_cluster_name | mandatory }}"
 configure_ssh_key: "{{ openshift_install_ssh_key | mandatory }}"
-configure_pull_secret: "{{ openshift_install_pull_secret | safe | from_json | mandatory }}"
+configure_pull_secret: "{{ openshift_install_pull_secret | mandatory | safe | from_json  }}"
 configure_fips: "{{ openshift_install_fips | d(false) }}"
 
 # Binaries
@@ -61,3 +61,7 @@ configure_registry_product_repo: "{{ openshift_install_registry_repo | default('
 configure_registry_repo: "{{ openshift_install_registry_repo | default('ocp4/openshift4') }}"
 configure_registry_host: "{{ openshift_install_registry_host | default(ansible_hostname) }}"
 configure_registry_release: "{{ openshift_install_registry_release | default('ocp-release') }}"
+
+
+# Wait for install
+configure_wait_for_install: "{{ openshift_install_wait_for_install | default(true) }}"

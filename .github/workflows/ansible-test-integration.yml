@@ -1,0 +1,46 @@
+---
+name: Ansible Integration Test
+on:  # yamllint disable-line rule:truthy
+  pull_request:
+  merge_group:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+permissions:
+  contents: read
+jobs:
+  ansible_test:
+    runs-on: ubuntu-latest
+    container: fedora:latest
+    services:
+      myservice:
+        image: mockserver/mockserver:5.14.0
+        ports:
+          - 1080:1080
+    steps:
+      - name: Update pip, git
+        run: |
+          set -euxo pipefail
+          sudo dnf update -y
+          sudo dnf install -y python3-devel python3-pip git curl ansible gcc
+
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          path: ansible_collections/machacekondra/openshift_install
+
+      - name: Dependencies
+        run: |
+          ansible-galaxy collection install -r machacekondra/openshift_install/tests/unit/requirements.yml --force
+        working-directory: ansible_collections
+
+      - name: Configure mock server
+        run: |
+
+      - name: Run
+        run: |
+          curl -v -X PUT --data @tests/expectations/mock.json http://myservice:1080/mockserver/expectation
+          ansible-test integration -v --color
+        working-directory: ansible_collections/machacekondra/openshift_install

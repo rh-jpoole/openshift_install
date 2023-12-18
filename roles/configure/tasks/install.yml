@@ -11,3 +11,4 @@
 - name: Install | Wait for install
   ansible.builtin.command: "{{ configure_install_binary }} agent wait-for install-complete --dir={{ ansible_env.HOME }}/.{{ openshift_install_cluster_name }}"
   changed_when: false
+  when: openshift_install_wait_for_install
