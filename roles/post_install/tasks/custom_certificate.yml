@@ -1,4 +1,4 @@
-- name: Generate a certificate with an existing token
+- name: Certificate | Generate a certificate with an existing token
   community.hashi_vault.vault_pki_generate_certificate:
     role_name: "{{ post_install_vault_role_name }}"
     common_name: "*.apps.{{ post_install_cluster_name }}.{{ post_install_base_domain }}"
@@ -10,7 +10,7 @@
   when: post_install_vault_role_name != ''
   register: __cert_data
 
-- name: Create custom CA ConfigMap
+- name: Certificate | Create custom CA ConfigMap
   kubernetes.core.k8s:
     state: present
     kubeconfig: "{{ post_install_home_dir }}/auth/kubeconfig"
@@ -23,7 +23,7 @@
       data:
         ca-bundle.crt: "{{ __cert_data.data.data.issuing_ca }}"
 
-- name: Patch proxy config
+- name: Certificate | Patch proxy config
   kubernetes.core.k8s:
     state: present
     kubeconfig: "{{ post_install_home_dir }}/auth/kubeconfig"
@@ -36,7 +36,7 @@
         trustedCA:
           name: "custom-ca"
 
-- name: Create secret
+- name: Certificate | Create secret
   kubernetes.core.k8s:
     state: present
     kubeconfig: "{{ post_install_home_dir }}/auth/kubeconfig"
@@ -51,7 +51,7 @@
         tls.crt: "{{ (__cert_data.data.data.certificate + '\n') | b64encode }}"
         tls.key: "{{ (__cert_data.data.data.private_key + '\n') | b64encode }}"
 
-- name: Patch IngressController
+- name: Certificate | Patch IngressController
   kubernetes.core.k8s:
     state: present
     kubeconfig: "{{ post_install_home_dir }}/auth/kubeconfig"

@@ -76,14 +76,6 @@
     path: "{{ configure_cluster_home_dir }}/openshift"
     state: directory
 
-- name: Setup | Copy manifests
-  ansible.builtin.copy:
-    src: "{{ item }}"
-    dest: "{{ configure_cluster_home_dir }}/openshift/{{ item }}"
-    mode: "0644"
-  loop:
-    - gitops.yml
-
 - name: Setup | Generate install-config.yaml
   ansible.builtin.template:
     src: install-config.yaml.j2
