@@ -1,4 +1,4 @@
-- name: Generate a certificate with an existing token
+- name: Vault | Generate a certificate with an existing token
   community.hashi_vault.vault_pki_generate_certificate:
     role_name: "{{ registry_vault_role_name }}"
     common_name: "{{ registry_host }}"
@@ -12,17 +12,17 @@
       - "{{ registry_host.split('.')[0] }}"
   register: __cert_data
 
-- name: Write a certificate
+- name: Vault | Write a certificate
   ansible.builtin.copy:
     content: "{{ __cert_data.data.data.certificate }}"
     dest: "{{ registry_directory }}/certs/domain.crt"
 
-- name: Write a certificate key
+- name: Vault | Write a certificate key
   ansible.builtin.copy:
     content: "{{ __cert_data.data.data.private_key }}"
     dest: "{{ registry_directory }}/certs/domain.key"
 
-- name: Write a ca cert
+- name: Vault | Write a ca cert
   ansible.builtin.copy:
     content: "{{ __cert_data.data.data.issuing_ca }}"
     dest: "{{ registry_directory }}/certs/ca.crt"

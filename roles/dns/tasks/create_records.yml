@@ -13,7 +13,7 @@
     ipv4: "{{ item.ipaddr }}"
     state: present
     provider: "{{ dns_provider }}"
-  loop: "{{ openshift_install_nodes }}"
+  loop: "{{ dns_nodes }}"
 
 - name: Configure an A record for etcd
   infoblox.nios_modules.nios_a_record:
@@ -21,7 +21,7 @@
     ipv4: "{{ item.ipaddr }}"
     state: present
     provider: "{{ dns_provider }}"
-  loop: "{{ openshift_install_nodes }}"
+  loop: "{{ dns_nodes }}"
   loop_control:
     index_var: my_idx
 
@@ -51,6 +51,6 @@
     weight: 10
     port: 2380
     provider: "{{ dns_provider }}"
-  loop: "{{ openshift_install_nodes }}"
+  loop: "{{ dns_nodes }}"
   loop_control:
     index_var: my_idx

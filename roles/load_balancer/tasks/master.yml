@@ -9,26 +9,26 @@
 - name: master | Create backend-openshift-router
   f5networks.f5_modules.bigip_pool:
     state: present
-    name: "{{ openshift_install_cluster_name }}-backend-openshift-api-server"
+    name: "{{ load_balancer_cluster_name }}-backend-openshift-api-server"
     monitors:
       - "backend-openshift-api-monitor"
     provider: "{{ load_balancer_provider }}"
 
 - name: master | Add pool member to backend-openshift-api-server
   f5networks.f5_modules.bigip_pool_member:
-    pool: "{{ openshift_install_cluster_name }}-backend-openshift-api-server"
-    name: "{{ item.name | mandatory }}-{{ openshift_install_cluster_name }}"
+    pool: "{{ load_balancer_cluster_name }}-backend-openshift-api-server"
+    name: "{{ item.name | mandatory }}-{{ load_balancer_cluster_name }}"
     host: "{{ item.ipaddr }}"
     port: 6443
     provider: "{{ load_balancer_provider }}"
-  loop: "{{ openshift_install_nodes | selectattr('role', 'equalto', 'master') }}"
+  loop: "{{ load_balancer_nodes | selectattr('role', 'equalto', 'master') }}"
 
 - name: master | Add virtual server for master
   f5networks.f5_modules.bigip_virtual_server:
     state: present
-    name: "{{ openshift_install_cluster_name }}-frontend-openshift-api-server"
+    name: "{{ load_balancer_cluster_name }}-frontend-openshift-api-server"
     destination: "{{ load_balancer_api_vip }}"
     port: 6443
-    pool: "{{ openshift_install_cluster_name }}-backend-openshift-api-server"
+    pool: "{{ load_balancer_cluster_name }}-backend-openshift-api-server"
     snat: Automap
     provider: "{{ load_balancer_provider }}"

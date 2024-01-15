@@ -1,4 +1,5 @@
+load_balancer_nodes: "{{ openshift_install_nodes | mandatory  }}"
+load_balancer_cluster_name: "{{ openshift_install_cluster_name | mandatory }}"
 load_balancer_api_vip: "{{ openshift_install_api_vip | mandatory }}"
 load_balancer_ingress_vip: "{{ openshift_install_ingress_vip | mandatory }}"
-
-load_balancer_provider: "{{ openshift_install_lb | d(lookup('community.hashi_vault.hashi_vault', 'secret={{ openshift_install_vault_secret_lb }} token={{ openshift_install_vault_token }} validate_certs=false url={{ openshift_install_vault_url }}')) }}"
+load_balancer_provider: "{{ openshift_install_lb | mandatory }}"

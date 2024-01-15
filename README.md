@@ -2,8 +2,8 @@
 
 # Openshift install collection
 This collection contains roles to install and configure Openshift and its infrastructure.
-There are roles to setup external DNS and LoadBalancer. It's using agent based installation
-method.
+The collection contains roles to setup external DNS and LoadBalancer. It's using [agent based](https://docs.openshift.com/container-platform/4.14/installing/installing_with_agent_based_installer/installing-with-agent-based-installer.html)
+installation method for Openshift.
 
 ## Infrastructure support
 
@@ -24,7 +24,7 @@ Certificate management systems:
  - Ansible 2.13
 
 ## Dependencies:
-Following dependencies will be installed by playbook on the node which is used for installation:
+Following dependencies will be installed by collection on the node which is used for installation:
 
  - python3-aiohttp (vmware)
  - python3-hvac (hashi vault)
@@ -43,12 +43,13 @@ Name | Description
 [machacekondra.openshfit_install.dns](https://github.com/machacekondra/openshift_install/blob/main/roles/dns/README.md)|Configure the DNS for the Openshift nodes.
 [machacekondra.openshfit_install.load_balancer](https://github.com/machacekondra/openshift_install/blob/main/roles/load_balancer/README.md)|Configure load balancer for API/Ingress for Openshift.
 [machacekondra.openshfit_install.configure](https://github.com/machacekondra/openshift_install/blob/main/roles/configure/README.md)|Setup the nodes and run the installation of the Openshift.
+[machacekondra.openshfit_install.post_install](https://github.com/machacekondra/openshift_install/blob/main/roles/post_install/README.md)|Run the post install tasks.
 
 ## Installation and Usage
 
 ### Installing the Collection from Ansible Galaxy
 
-Before using the Kubernetes collection, you need to install it with the Ansible Galaxy CLI:
+Before using the collection, you need to install it with the Ansible Galaxy CLI:
 
 ```bash
 $ ansible-galaxy collection install machacekondra.openshift_install

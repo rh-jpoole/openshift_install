@@ -20,7 +20,9 @@
     path: "{{ setup_binaries_dir }}/{{ item }}"
     state: directory
     mode: '0755'
-  with_items: ["bin", "downloads"]
+  loop:
+    - "bin"
+    - "downloads"
 
 - name: Binaries | Download the openshift_client binary
   ansible.builtin.get_url:

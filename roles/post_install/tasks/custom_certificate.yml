@@ -7,7 +7,6 @@
     auth_method: token
     token: "{{ post_install_vault_token }}"
     validate_certs: false
-  when: post_install_vault_role_name != ''
   register: __cert_data
 
 - name: Certificate | Create custom CA ConfigMap

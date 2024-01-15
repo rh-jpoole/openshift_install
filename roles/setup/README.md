@@ -1,46 +1,50 @@
 # Setup role
 
-This role prepare the environment for the run of the `openshift-install` agent.
+This role prepare the environment for the installation of the Openshift.
 
-This role download and install following dependencies:
+This role download and install following binaries:
  - openshift-install
  - oc
 
-It downloads `oc` binary from official Openshift website. Then based on the input parameters
+Downloads `oc` binary from official Openshift website. Then based on the input parameters
 it either download `openshift-install` binary or extract it from the container `registry`.
 
 This role also uses pip and system package manager to install following packages:
 
 System dependencies:
- - nmstate
- - podman
- - python3-hvac (hashi)
- - python3-passlib (httpasswd)
+    - podman
+    - python3-hvac
+    - python3-passlib
+    - python3-pip
+    - python3-kubernetes
+    - python3-netaddr
+    - python3-aiohttp
 
 Pip dependencies:
  - infoblox-client (infoblox)
- - aiohttp (vmware)
 
+Note that `infoblox-client` is not provided via RPM, that is the reason we don't use RPM.
 
 ## Variables documentation
 
-URL which is used to download client tools - `oc` and `openshift-install`.
-Default URL used is https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp
+URL of client tools - `oc` and `openshift-install`.
+Default is https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp
 ```yaml
 setup_clients_url
 ```
 
-Required variable which define the name of the Openshift cluster.
+The cluster name. Required.
 ```yaml
 setup_cluster_name
 ```
 
-Define a directory where downloaded binaries will be added.
+Directory where downloaded binaries are stored.
+Default is $HOME/{{ setup_cluster_name }}
 ```yaml
-setup_binaries_dir: {{ ansible_env.HOME }}/.{{ configure_cluster_name }}
+setup_binaries_dir
 ```
 
-Define of the `setup_binaries_dir` directory should be cleaned before the run of the role.
+If `true` the `setup_binaries_dir` directory will be cleaned before role is executed.
 ```yaml
 setup_binaries_clean
 ```
@@ -51,9 +55,8 @@ Could be `latest`/`stable` or specific release.
 setup_cluster_version
 ```
 
-If true the `openshift-install` binary won't be downloaded from `setup_clients_url`.
-It should be extracted from restricted registry, which is done in `registry` role.
-Default is `false`.
+If `true` custom registry is used and the `setup` role won't download `openshift-install`
+binary from `setup_clients_url` URL. Default is `false`.
 ```yaml
 setup_install_registry
 ```

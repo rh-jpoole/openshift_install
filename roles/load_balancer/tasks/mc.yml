@@ -1,26 +1,26 @@
 - name: mc | Create backend-machine-config-server
   f5networks.f5_modules.bigip_pool:
     state: present
-    name: "{{ openshift_install_cluster_name }}-backend-machine-config-server"
+    name: "{{ load_balancer_cluster_name }}-backend-machine-config-server"
     monitors:
       - tcp
     provider: "{{ load_balancer_provider }}"
 
 - name: mc | Add pool member to backend-machine-config-server
   f5networks.f5_modules.bigip_pool_member:
-    pool: "{{ openshift_install_cluster_name }}-backend-machine-config-server"
-    name: "{{ item.name }}-{{ openshift_install_cluster_name }}"
+    pool: "{{ load_balancer_cluster_name }}-backend-machine-config-server"
+    name: "{{ item.name }}-{{ load_balancer_cluster_name }}"
     host: "{{ item.ipaddr }}"
     port: 22623
     provider: "{{ load_balancer_provider }}"
-  loop: "{{ openshift_install_nodes }}"
+  loop: "{{ load_balancer_nodes }}"
 
 - name: mc | Add virtual server for machine config
   f5networks.f5_modules.bigip_virtual_server:
     state: present
-    name: "{{ openshift_install_cluster_name }}-frontend-machine-config-server"
+    name: "{{ load_balancer_cluster_name }}-frontend-machine-config-server"
     destination: "{{ load_balancer_api_vip }}"
     port: 22623
-    pool: "{{ openshift_install_cluster_name }}-backend-machine-config-server"
+    pool: "{{ load_balancer_cluster_name }}-backend-machine-config-server"
     snat: Automap
     provider: "{{ load_balancer_provider }}"

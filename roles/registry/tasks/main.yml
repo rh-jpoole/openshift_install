@@ -3,7 +3,10 @@
     path: "{{ registry_directory }}/{{ item }}"
     state: directory
     mode: '0755'
-  with_items: ["auth", "certs", "data"]
+  loop:
+    - "auth"
+    - "certs"
+    - "data"
 
 - name: Generate certificate
   ansible.builtin.import_tasks: request_certificate_vault.yml

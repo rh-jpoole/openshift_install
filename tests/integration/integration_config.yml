@@ -2,10 +2,8 @@ openshift_install_api_vip: "1.2.3.10"
 openshift_install_ingress_vip: "1.2.3.11"
 openshift_install_dns_primary_grid: my
 openshift_install_wait_for_install: false
-openshift_install_cluster_name: testcluster
+openshift_install_cluster_name: "testcluster"
 openshift_install_base_domain: example.com
-openshift_install_network_name: "testnetwork"
-openshift_install_folder: "/DC-Practice-Lab/vm/omachace"
 openshift_install_network: "10.1.198.224/28"
 openshift_install_ssh_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCXFFbh2G91SF6lxBYg68nniIwiK7ZdfuQFATYLqgPKrr1GPD0iV4CWPBlOs+Zev+0Bm8hqX3p7TtNOZuN1dOo7RvYUsIES1Grtkg7CY2rG4JLKDAPG5iAbda9piWdwgOpmLegQxgji90CGRqg9VUEI5UIC07UExYFoksZnzgLlX/n7tqOXLhIqV9Mz0/8LFh4yvpr39GbJSD+yAfjmiMsLOKczXioKyN27mqvuwrYjkpMzBpVjgh6sHdWzcylxK4iHJdlyhDYhe7FuIqj/+2qQDcxXhnAwJl3PnWiq2ZCEO61s1HkUfAvVqCulWR06AU95HLP3qh9gLnI7/pkc9D6Tm9dP90SLYpX3627XHjcZUChbESUtS8SaLp1R2FIEXxXGVG5CPWy6tivl8ReVEvCb3vNckhkbFnuYmmKesDRN014R9JUhHxp9hPuM2nQROSUc3ZtSxeAKOZTmQJXNd4YZfp/e1ODJmkH+1tDICde4ob/dIgEIZO5tGWyo/Lc+258= omachace@ondra"
 openshift_install_pull_secret: '{"auths":{"quay.io":{"auth":""}}}'
@@ -43,9 +41,11 @@ openshift_install_nodes:
     ipaddr: "1.2.3.6"
     macaddr: "00:11:22:33:44:57"
     role: 'master'
-openshift_install_datacenter: DC-Practice-Lab
-openshift_install_cluster: '/DC-Practice-Lab/host/Practice-Lab-Cluster'
-openshift_install_datastore: datastore1
+openshift_install_vcenter_datacenter: DC-Practice-Lab
+openshift_install_vcenter_cluster: '/DC-Practice-Lab/host/Practice-Lab-Cluster'
+openshift_install_vcenter_datastore: datastore1
+openshift_install_vcenter_network: "testnetwork"
+openshift_install_vcenter_folder: "/DC-Practice-Lab/vm/omachace"
 dns_provider:
   host: "myservice:1080"
   username: "x"

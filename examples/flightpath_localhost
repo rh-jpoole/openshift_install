@@ -18,12 +18,12 @@ all:
         openshift_install_base_domain: flightpath.internal
         openshift_install_cluster_name: omachace-agent-dhcp
 
-        # Vsphere infra vars
-        openshift_install_datacenter: DC-Practice-Lab
-        openshift_install_cluster: Practice-Lab-Cluster
-        openshift_install_datastore: pool0-ceph-storage
-        openshift_install_folder: "/DC-Practice-Lab/vm/omachace"
-        openshift_install_network_name: "vlan-314 - DPortGroup"
+        # Vcenter infra vars
+        openshift_install_vcenter_datacenter: DC-Practice-Lab
+        openshift_install_vcenter_cluster: Practice-Lab-Cluster
+        openshift_install_vcenter_datastore: pool0-ceph-storage
+        openshift_install_vcenter_network: "vlan-314 - DPortGroup"
+        openshift_install_vcenter_folder: "/DC-Practice-Lab/vm/omachace"
 
         # Virtual IP
         openshift_install_api_vip: 10.1.192.238

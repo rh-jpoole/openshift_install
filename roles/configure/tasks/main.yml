@@ -1,8 +1,12 @@
 - name: Include registry
   ansible.builtin.import_tasks: registry.yml
-  when: configure_registry_cert is not defined or configure_registry_cert == ''
+  when: configure_registry
   tags:
     - registry
+
+- name: Include SSH
+  ansible.builtin.import_tasks: ssh.yml
+  when: configure_ssh_key == ''
 
 - name: Include setup
   ansible.builtin.import_tasks: setup.yml

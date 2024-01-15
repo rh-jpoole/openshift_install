@@ -47,19 +47,19 @@
           type: DISTRIBUTED_PORTGROUP
           network: "{{ lookup('vmware.vmware_rest.network_moid', '/{{ configure_datacenter }}/network/vlan-202 - DPortGroup', **configure_vsphere) }}"
       #############################################################
-  loop: "{{ openshift_install_nodes }}"
+  loop: "{{ configure_nodes }}"
 
 - name: Setup | Fetch VMs MAC addresses
   ansible.builtin.set_fact:
-    openshift_install_nodes: "{{ openshift_install_nodes | machacekondra.openshift_install.fetch_macaddrs(cl_name=configure_cluster_name, **configure_vsphere) }}"
-  when: openshift_install_nodes | selectattr('macaddr', 'defined') | length == 0
+    configure_nodes: "{{ configure_nodes | machacekondra.openshift_install.fetch_macaddrs(cl_name=configure_cluster_name, **configure_vsphere) }}"
+  when: configure_nodes | selectattr('macaddr', 'defined') | length == 0
   tags:
     - install-config
 
 - name: Setup | Fetch VMs IP addresses
   ansible.builtin.set_fact:
-    openshift_install_nodes: "{{ openshift_install_nodes | machacekondra.openshift_install.fetch_ips(configure_cluster_name, configure_base_domain, provider=configure_dns_provider) }}"
-  when: openshift_install_nodes | selectattr('ipaddr', 'defined') | length == 0
+    configure_nodes: "{{ configure_nodes | machacekondra.openshift_install.fetch_ips(configure_cluster_name, configure_base_domain, provider=configure_dns_provider) }}"
+  when: configure_nodes | selectattr('ipaddr', 'defined') | length == 0
   tags:
     - install-config
 

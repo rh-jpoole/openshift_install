@@ -1,7 +1,3 @@
-- name: Include setup ssh keys
-  ansible.builtin.include_tasks: ssh.yml
-  when: openshift_install_ssh_key is not defined
-
 - name: Include dependencies
   ansible.builtin.include_tasks: dependencies.yml
 

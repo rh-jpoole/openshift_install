@@ -1,7 +1,7 @@
 apiVersion: v1beta1
 kind: AgentConfig
 metadata:
-  name: {{ openshift_install_cluster_name }}
+  name: {{ configure_cluster_name }}
 rendezvousIP: {{ openshift_install_nodes[0].ipaddr }}
 hosts:
 {% for node in openshift_install_nodes %}
