@@ -1,6 +1,6 @@
 - name: Fetch VMs IP addresses
   ansible.builtin.set_fact:
-    dns_nodes: "{{ dns_nodes | machacekondra.openshift_install.fetch_ips(configure_cluster_name, configure_base_domain, provider=configure_dns_provider) }}"
+    dns_nodes: "{{ dns_nodes | machacekondra.openshift_install.fetch_ips(dns_cluster_name, dns_base_domain, provider=dns_provider) }}"
   when: dns_nodes | selectattr('ipaddr', 'defined') | length == 0
 
 - name: Include request IPs for nodes

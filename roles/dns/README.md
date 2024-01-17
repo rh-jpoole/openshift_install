@@ -17,6 +17,12 @@ dns_nodes {
 }
 ```
 
+The base domain of the cluster. Required.
+```dns_base_domain```
+
+The cluster name. Required.
+```dns_cluster_name```
+
 Network range that will be used to allocate addresses for Openshift nodes. **Required if** static IPs not provided.
 ```dns_network```
 
