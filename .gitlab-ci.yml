@@ -1,0 +1,22 @@
+image: fedora:latest
+
+variables:
+  GIT_CLONE_PATH: $CI_BUILDS_DIR/ansible_collections/machacekondra/openshift_install
+
+stages:
+  - test
+
+integration-test-job:
+  stage: test
+  tags:
+    - shared
+  script:
+    - sudo dnf update -y
+    - sudo dnf install -y python3-devel python3-pip curl ansible gcc which ncurses git
+    - sudo pip install infoblox-client
+    - cp $cabundle /etc/pki/ca-trust/source/anchors/
+    - sudo update-ca-trust
+    - ansible-galaxy collection install -r tests/unit/requirements.yml --force
+    - curl -s https://gitlab.com/gitlab-org/incubation-engineering/mobile-devops/download-secure-files/-/raw/main/installer | bash
+    - cp .secure_files/.ci.yml tests/integration/integration_config.yml
+    - ANSIBLE_COLLECTIONS_PATH=$CI_BUILDS_DIR/ansible_collections ansible-test integration -vvvv --color
