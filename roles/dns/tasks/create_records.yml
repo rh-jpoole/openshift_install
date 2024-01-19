@@ -4,14 +4,14 @@
     grid_primary:
       - name: "{{ dns_primary_grid }}"
     restart_if_needed: true
-    state: present
+    state: "{{ dns_state }}"
     provider: "{{ dns_provider }}"
 
 - name: Configure an A record for machines
   infoblox.nios_modules.nios_a_record:
     name: "{{ item.name | mandatory }}.{{ dns_zone }}"
     ipv4: "{{ item.ipaddr }}"
-    state: present
+    state: "{{ dns_state }}"
     provider: "{{ dns_provider }}"
   loop: "{{ dns_nodes }}"
 
@@ -19,7 +19,7 @@
   infoblox.nios_modules.nios_a_record:
     name: "etcd-{{ my_idx }}.{{ dns_zone }}"
     ipv4: "{{ item.ipaddr }}"
-    state: present
+    state: "{{ dns_state }}"
     provider: "{{ dns_provider }}"
   loop: "{{ dns_nodes }}"
   loop_control:
@@ -29,7 +29,7 @@
   infoblox.nios_modules.nios_a_record:
     name: "{{ item }}.{{ dns_zone }}"
     ipv4: "{{ openshift_install_api_vip }}"
-    state: present
+    state: "{{ dns_state }}"
     provider: "{{ dns_provider }}"
   loop:
     - "api"
@@ -39,14 +39,14 @@
   infoblox.nios_modules.nios_a_record:
     name: "*.apps.{{ dns_zone }}"
     ipv4: "{{ openshift_install_ingress_vip }}"
-    state: present
+    state: "{{ dns_state }}"
     provider: "{{ dns_provider }}"
 
 - name: Configure an SRV records
   infoblox.nios_modules.nios_srv_record:
     name: "_etcd-server-ssl._tcp.{{ dns_zone }}"
     target: "etcd-{{ my_idx }}.{{ dns_zone }}"
-    state: present
+    state: "{{ dns_state }}"
     priority: 0
     weight: 10
     port: 2380

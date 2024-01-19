@@ -1,5 +1,2 @@
-- name: Include dependencies
-  ansible.builtin.include_tasks: dependencies.yml
-
-- name: Include binaries
-  ansible.builtin.include_tasks: binaries.yml
+- name: Run setup tasks
+  ansible.builtin.include_tasks: "{{ setup_state }}.yml"

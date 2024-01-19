@@ -1,6 +1,6 @@
 - name: worker | Create backend-openshift-router
   f5networks.f5_modules.bigip_pool:
-    state: present
+    state: "{{ load_balancer_state }}"
     name: "{{ load_balancer_cluster_name }}-backend-openshift-router"
     monitors:
       - tcp
@@ -8,6 +8,7 @@
 
 - name: worker | Add pool member to backend-openshift-router
   f5networks.f5_modules.bigip_pool_member:
+    state: "{{ load_balancer_state }}"
     pool: "{{ load_balancer_cluster_name }}-backend-openshift-router"
     name: "{{ item.name }}-{{ load_balancer_cluster_name }}"
     host: "{{ item.ipaddr }}"
@@ -18,7 +19,7 @@
 
 - name: worker | Add virtual server for worker
   f5networks.f5_modules.bigip_virtual_server:
-    state: present
+    state: "{{ load_balancer_state }}"
     name: "{{ load_balancer_cluster_name }}-frontend-openshift-router"
     destination: "{{ load_balancer_ingress_vip }}"
     port: 443

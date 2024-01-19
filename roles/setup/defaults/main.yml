@@ -1,3 +1,4 @@
+setup_state: "{{ openshift_install_state | d('present') }}"
 # Name of the cluster. Used for the folder, which store temporary stuff for installation.
 setup_cluster_name: "{{ openshift_install_cluster_name | mandatory }}"
 # URL that contains openshift client tools

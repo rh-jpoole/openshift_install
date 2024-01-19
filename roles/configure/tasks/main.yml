@@ -1,20 +1,2 @@
-- name: Include registry
-  ansible.builtin.import_tasks: registry.yml
-  when: configure_registry
-  tags:
-    - registry
-
-- name: Include SSH
-  ansible.builtin.import_tasks: ssh.yml
-  when: configure_ssh_key == ''
-
-- name: Include setup
-  ansible.builtin.import_tasks: setup.yml
-
-- name: Include DHCP reservation
-  ansible.builtin.import_tasks: dhcp_reserve.yml
-
-- name: Include install
-  ansible.builtin.import_tasks: install.yml
-  tags:
-    - poweron
+- name: Run configuration
+  ansible.builtin.import_tasks: "{{ configure_vm_state }}.yml"
