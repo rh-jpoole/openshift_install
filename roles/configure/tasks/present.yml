@@ -8,8 +8,8 @@
   ansible.builtin.import_tasks: ssh.yml
   when: configure_ssh_key == ''
 
-- name: Create | Include setup
-  ansible.builtin.import_tasks: setup.yml
+- name: Create | Include vmware
+  ansible.builtin.import_tasks: setup_vmware.yml
 
 - name: Create | Include DHCP reservation
   ansible.builtin.import_tasks: dhcp_reserve.yml

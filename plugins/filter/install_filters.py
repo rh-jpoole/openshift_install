@@ -7,7 +7,6 @@ import urllib.parse
 
 from ansible.module_utils.urls import open_url
 from ansible_collections.infoblox.nios_modules.plugins.module_utils.api import WapiLookup
-from ansible_collections.vmware.vmware_rest.plugins.plugin_utils.lookup import get_credentials
 from ansible_collections.vmware.vmware_rest.plugins.module_utils.vmware_rest import open_session
 
 
@@ -194,6 +193,14 @@ class FilterModule(object):
                 return _json[0]['vm']
 
     async def __get_session(self, **kwargs):
+        return await open_session(
+            vcenter_hostname=kwargs.get('vcenter_hostname'),
+            vcenter_username=kwargs.get('vcenter_username'),
+            vcenter_password=kwargs.get('vcenter_password'),
+            validate_certs=kwargs.get('vcenter_validate_certs', False),
+        )
+
+    async def __get_session_o(self, **kwargs):
         creds = get_credentials(**kwargs)
         return await open_session(
             vcenter_hostname=creds.get('vcenter_hostname'),

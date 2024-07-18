@@ -1,5 +1,7 @@
 - name: Create | Include dependencies
-  ansible.builtin.include_tasks: dependencies.yml
+  ansible.builtin.import_tasks: dependencies.yml
 
 - name: Create | Include binaries
-  ansible.builtin.include_tasks: binaries.yml
+  ansible.builtin.import_tasks: binaries.yml
+  tags:
+    - binaries

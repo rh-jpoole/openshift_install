@@ -1,3 +1,5 @@
+configure_type: "{{ openshift_install_type | d('vmware') }}"
+
 configure_vm_state: "{{ openshift_install_vm_state | d('present') }}"
 # Nodes
 configure_nodes: "{{ openshift_install_nodes | mandatory }}"

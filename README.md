@@ -9,6 +9,7 @@ installation method for Openshift.
 
 Openshift platforms:
   - vpshere
+  - baremetal
 
 DNS systems:
   - Infoblox
