@@ -25,6 +25,8 @@
   vars:
     # __network_prefix: "{{ baremetal_network | ansible.utils.ipaddr('prefix') }}"
     __network_prefix: "24"
+    __master_nodes_len: "{{ openshift_install_nodes | machacekondra.openshift_install.master_nodes_len }}"
+    __worker_nodes_len: "{{ openshift_install_nodes | machacekondra.openshift_install.worker_nodes_len }}"
 
 - name: Baremetal | Check if ISO already exists
   ansible.builtin.stat:
@@ -50,7 +52,7 @@
 - name: Baremetal | Publish ISO on http server
   containers.podman.podman_container:
     name: myhttp
-    image: httpd:2.4
+    image: "docker.io/library/httpd:2.4"
     recreate: true
     expose:
       - 8080
@@ -58,6 +60,7 @@
       - 8080:80
     volumes:
       - "{{ baremetal_cluster_home_dir }}:/usr/local/apache2/htdocs/:Z"
+    tty: true
 
 - name: Baremetal | Boot ISOs
   ansible.builtin.include_tasks: "boot_iso.yml"

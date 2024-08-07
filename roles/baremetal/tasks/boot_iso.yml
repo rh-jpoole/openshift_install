@@ -9,6 +9,7 @@
       image_url: 'http://{{ ansible_host }}:8080/agent.{{ idx }}.x86_64.iso'
       media_types:
         - CD
+    resource_id: "{{ item.bmc_resource_id | default(omit) }}"
 
 - name: Baremetal | Set Next One-Time Boot to CD/DVD
   community.general.redfish_command:
@@ -18,6 +19,7 @@
     username: "{{ item.bmc_username }}"
     password: "{{ item.bmc_password | d(baremetal_bmc_password) }}"
     bootdevice: Cd
+    resource_id: "{{ item.bmc_resource_id | default(omit) }}"
 
 - name: Baremetal | Reboot the system
   community.general.redfish_command:
@@ -26,3 +28,4 @@
     baseuri: "{{ item.bmc_address }}"
     username: "{{ item.bmc_username }}"
     password: "{{ item.bmc_password | d(baremetal_bmc_password) }}"
+    resource_id: "{{ item.bmc_resource_id | default(omit) }}"
