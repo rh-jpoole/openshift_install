@@ -22,3 +22,6 @@ baremetal_ingress_vip: "{{ openshift_install_ingress_vip | mandatory }}"
 baremetal_bmc_password: "{{ openshift_install_bmc_password | d('') }}"
 baremetal_wait_for_install: "{{ openshift_install_wait_for_install | d(false) }}"
 baremetal_root_device_hints: "{{ openshift_install_root_device_hints | d('') }}"
+
+baremetal_set_onetime_boot: "{{ openshift_install_set_onetime_boot | d(true) }}"
+baremetal_power_cmd: "{{ openshift_install_power_cmd | default('PowerReboot') }}"

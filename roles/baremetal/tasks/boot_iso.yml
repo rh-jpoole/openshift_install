@@ -20,11 +20,12 @@
     password: "{{ item.bmc_password | d(baremetal_bmc_password) }}"
     bootdevice: Cd
     resource_id: "{{ item.bmc_resource_id | default(omit) }}"
+  when: baremetal_set_onetime_boot
 
 - name: Baremetal | Reboot the system
   community.general.redfish_command:
     category: Systems
-    command: PowerReboot
+    command: "{{ baremetal_power_cmd | default('PowerReboot') }}"
     baseuri: "{{ item.bmc_address }}"
     username: "{{ item.bmc_username }}"
     password: "{{ item.bmc_password | d(baremetal_bmc_password) }}"
