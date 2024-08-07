@@ -37,6 +37,8 @@
   ansible.builtin.command: "{{ baremetal_install_binary }} agent create image --dir={{ baremetal_cluster_home_dir }}"
   when: not iso_file.stat.exists
   changed_when: not iso_file.stat.exists
+  environment:
+    PATH: "{{ ansible_env.HOME }}/.{{ openshift_install_cluster_name }}/bin:{{ ansible_env.PATH }}"
 
 # Seems like there is no way to share single ISO between more hosts in iDRAC
 - name: Baremetal | Copy ISOs
@@ -72,3 +74,5 @@
   ansible.builtin.command: "{{ baremetal_install_binary }} agent wait-for install-complete --dir={{ baremetal_cluster_home_dir }}"
   changed_when: false
   when: baremetal_wait_for_install
+  environment:
+    PATH: "{{ ansible_env.HOME }}/.{{ openshift_install_cluster_name }}/bin:{{ ansible_env.PATH }}"
