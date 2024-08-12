@@ -51,30 +51,28 @@
     - 1
     - 2
 
-- throttle: 1
-  block:
-    - name: Baremetal | Publish ISO on http server
-      containers.podman.podman_container:
-        name: myhttp
-        image: "docker.io/library/httpd:2.4"
-        recreate: true
-        expose:
-          - 8080
-        publish:
-          - 8080:80
-        volumes:
-          - "{{ baremetal_cluster_home_dir }}:/usr/local/apache2/htdocs/:Z"
-        tty: true
+- name: Baremetal | Publish ISO on http server
+  containers.podman.podman_container:
+    name: "{{ inventory_hostname }}-agent-iso-httpd"
+    image: "docker.io/library/httpd:2.4"
+    recreate: true
+    expose:
+      - "{{ openshift_agent_iso_httpd_port }}"
+    publish:
+      - "{{ openshift_agent_iso_httpd_port }}:80"
+    volumes:
+      - "{{ baremetal_cluster_home_dir }}:/usr/local/apache2/htdocs/:Z"
+    tty: true
 
-    - name: Baremetal | Boot ISOs
-      ansible.builtin.include_tasks: "boot_iso.yml"
-      loop: "{{ openshift_install_nodes }}"
-      loop_control:
-        index_var: idx
+- name: Baremetal | Boot ISOs
+  ansible.builtin.include_tasks: "boot_iso.yml"
+  loop: "{{ openshift_install_nodes }}"
+  loop_control:
+    index_var: idx
 
-    - name: Baremetal | Wait for install
-      ansible.builtin.command: "{{ baremetal_install_binary }} agent wait-for install-complete --dir={{ baremetal_cluster_home_dir }}"
-      changed_when: false
-      when: baremetal_wait_for_install
-      environment:
-        PATH: "{{ ansible_env.HOME }}/.{{ openshift_install_cluster_name }}/bin:{{ ansible_env.PATH }}"
+- name: Baremetal | Wait for install
+  ansible.builtin.command: "{{ baremetal_install_binary }} agent wait-for install-complete --dir={{ baremetal_cluster_home_dir }}"
+  changed_when: false
+  when: baremetal_wait_for_install
+  environment:
+    PATH: "{{ ansible_env.HOME }}/.{{ openshift_install_cluster_name }}/bin:{{ ansible_env.PATH }}"

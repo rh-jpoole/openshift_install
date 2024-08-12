@@ -6,7 +6,7 @@
     username: "{{ item.bmc_username }}"
     password: "{{ item.bmc_password | d(baremetal_bmc_password) }}"
     virtual_media:
-      image_url: 'http://{{ ansible_host }}:8080/agent.{{ idx }}.x86_64.iso'
+      image_url: 'http://{{ ansible_host }}:{{ openshift_agent_iso_httpd_port }}/agent.{{ idx }}.x86_64.iso'
       media_types:
         - CD
     resource_id: "{{ item.bmc_resource_id | default(omit) }}"
