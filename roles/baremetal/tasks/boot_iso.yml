@@ -6,10 +6,12 @@
     username: "{{ item.bmc_username }}"
     password: "{{ item.bmc_password | d(baremetal_bmc_password) }}"
     virtual_media:
-      image_url: 'http://{{ ansible_host }}:{{ openshift_agent_iso_httpd_port }}/agent.{{ idx }}.x86_64.iso'
+      image_url: 'http://{{ ansible_host }}:{{ openshift_agent_iso_httpd_port }}/agent.x86_64.iso'
       media_types:
         - CD
     resource_id: "{{ item.bmc_resource_id | default(omit) }}"
+  when:
+    - (item.kubevirt is not defined or not item.kubevirt)
 
 - name: Baremetal | Set Next One-Time Boot to CD/DVD
   community.general.redfish_command:
@@ -20,7 +22,9 @@
     password: "{{ item.bmc_password | d(baremetal_bmc_password) }}"
     bootdevice: Cd
     resource_id: "{{ item.bmc_resource_id | default(omit) }}"
-  when: baremetal_set_onetime_boot
+  when:
+    - baremetal_set_onetime_boot
+    - (item.kubevirt is not defined or not item.kubevirt)
 
 - name: Baremetal | Reboot the system
   community.general.redfish_command:
@@ -30,3 +34,5 @@
     username: "{{ item.bmc_username }}"
     password: "{{ item.bmc_password | d(baremetal_bmc_password) }}"
     resource_id: "{{ item.bmc_resource_id | default(omit) }}"
+  when:
+    - (item.kubevirt is not defined or not item.kubevirt)
