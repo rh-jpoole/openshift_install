@@ -1,7 +1,9 @@
 - name: OCP Virt | Template the machine definitions
   kubernetes.core.helm_template:
     chart_ref: "{{ ansible_env.HOME }}/ocp-config-charts/charts/ocp-virt-vms"
-    values: "{{ item.kubevirt }}"
+    values: 
+      virtualMachines:
+        - "{{ item.kubevirt }}"
   when:
     - item.kubevirt is defined
     - item.kubevirt
