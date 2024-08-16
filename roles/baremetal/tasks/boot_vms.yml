@@ -1,0 +1,24 @@
+- name: OCP Virt | Template the machine definitions
+  kubernetes.core.helm_template:
+    chart_ref: "{{ ansible_env.HOME }}/ocp-config-charts/charts/ocp-virt-vms"
+    values: "{{ item.kubevirt }}"
+  when:
+    - item.kubevirt is defined
+    - item.kubevirt
+  delegate_to: "{{ item.mgmt_cluster_host }}"
+  register: vms_rendered
+  changed_when: false
+
+- name: OCP Virt | Write out template
+  ansible.builtin.copy:
+    content: "{{ vms_rendered.stdout }}"
+    dest: "/tmp/vm_rendered_{{ item.name }}.yaml"
+  delegate_to: "{{ item.mgmt_cluster_host }}"
+
+- name: OCP Virt | Apply the machine definitions
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ ansible_env.HOME }}/.{{ item.mgmt_cluster_host }}/auth/kubeconfig"
+    src: "/tmp/vm_rendered_{{ item.name }}.yaml"
+  delegate_to: "{{ item.mgmt_cluster_host }}"
+

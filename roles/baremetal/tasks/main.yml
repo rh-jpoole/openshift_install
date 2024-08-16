@@ -69,8 +69,15 @@
 - name: Baremetal | Boot ISOs
   ansible.builtin.include_tasks: "boot_iso.yml"
   loop: "{{ openshift_install_nodes }}"
-  # loop_control:
-  #   index_var: idx
+  when:
+    - (item.kubevirt is not defined or not item.kubevirt)
+
+- name: OCP Virt | Boot VMs
+  ansible.builtin.include_tasks: "boot_vms.yml"
+  loop: "{{ openshift_install_nodes }}"
+  when:
+    - item.kubevirt is defined
+    - item.kubevirt is mapping
 
 - name: Baremetal | Wait for install
   ansible.builtin.command: "{{ baremetal_install_binary }} agent wait-for install-complete --dir={{ baremetal_cluster_home_dir }}"
