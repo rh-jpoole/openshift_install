@@ -30,7 +30,7 @@ platform:
           bmc:
             username: {{ node.bmc_username }}
             password: {{ node.bmc_password | default(baremetal_bmc_password) }}
-            address: redfish+https://{{ node.bmc_address }}:8000/redfish/v1/Systems/
+            address: redfish+https://{{ node.bmc_address }}/redfish/v1/Systems/{{ node.bmc_resource_id | default(omit) }}
             disableCertificateVerification: true
 {% endfor %}
 {% else %}
