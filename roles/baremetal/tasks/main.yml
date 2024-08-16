@@ -14,7 +14,6 @@
   register: iso_file
 
 - when: not iso_file.stat.exists
-  changed_when: not iso_file.stat.exists
   block:
     - name: Baremetal | Generate install-config.yaml
       ansible.builtin.template:
