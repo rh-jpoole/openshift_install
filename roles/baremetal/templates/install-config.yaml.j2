@@ -18,7 +18,7 @@ networking:
   machineNetwork:
     - cidr: {{ baremetal_network }}
 platform:
-{% if __master_nodes_len|int > 1 %}
+{% if __master_nodes_len|int == 3 and openshift_install_platform|default('baremetal') != 'none' %}
   baremetal:
     apiVIPs:
       - {{ baremetal_api_vip }}
