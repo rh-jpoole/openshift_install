@@ -4,6 +4,8 @@
     values: 
       virtualMachines:
         - "{{ item.kubevirt }}"
+      openshift_install_api_vip: "{{ openshift_install_api_vip }}"
+      openshift_install_ingress_vip: "{{ openshift_install_ingress_vip }}"
   when:
     - item.kubevirt is defined
     - item.kubevirt
