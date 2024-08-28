@@ -6,6 +6,8 @@
         - "{{ item.kubevirt }}"
       openshift_install_api_vip: "{{ openshift_install_api_vip }}"
       openshift_install_ingress_vip: "{{ openshift_install_ingress_vip }}"
+      openshift_install_control_plane_ips: "{{ openshift_install_control_plane_ips }}"
+      openshift_install_compute_ips: "{{ openshift_install_compute_ips }}"
   when:
     - item.kubevirt is defined
     - item.kubevirt
