@@ -38,4 +38,4 @@ platform:
 {% endif %}
 pullSecret: '{{ baremetal_pull_secret | tojson | safe }}'
 sshKey: |
-  {{ baremetal_ssh_key | indent 2 }}
+  {{ baremetal_ssh_key | indent(2) }}
