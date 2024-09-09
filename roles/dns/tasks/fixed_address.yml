@@ -11,3 +11,10 @@
     state: present
     provider: "{{ dns_provider }}"
   loop: "{{ dns_nodes }}"
+
+- name: restart DHCP service
+  infoblox.nios_modules.nios_restartservices:
+    services:
+      - DHCP
+    restart_option: FORCE_RESTART
+    provider: "{{ dns_provider }}"
