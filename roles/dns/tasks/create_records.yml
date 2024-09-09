@@ -54,3 +54,17 @@
   loop: "{{ dns_nodes }}"
   loop_control:
     index_var: my_idx
+
+- name: add ipv4 dhcp fixed address reservation
+  infoblox.nios_modules.nios_fixed_address:
+    name: "{{ item.name }}"
+    ipaddr: "{{ item.ipaddr }}"
+    mac: "{{ item.macaddr }}"
+    options:
+      - num: 12
+        value: "{{ item.name }}"
+    network: "{{ openshift_install_network }}"
+    network_view: default
+    state: present
+    provider: "{{ dns_provider }}"
+  when: openshift_install_dhcp
