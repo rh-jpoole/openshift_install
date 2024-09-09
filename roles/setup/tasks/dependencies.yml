@@ -1,4 +1,5 @@
 - name: dependencies | Install the necessary linux packages which will be needed later in the ansible run
+  throttle: 1
   ansible.builtin.package:
     name:
       - nmstate
@@ -14,6 +15,7 @@
   become: true
 
 - name: dependencies | Install the necessary pip packages which will be needed later in the ansible run
+  throttle: 1
   ansible.builtin.pip:
     name:
       - infoblox-client
