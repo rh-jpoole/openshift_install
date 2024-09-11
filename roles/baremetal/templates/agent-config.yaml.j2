@@ -3,7 +3,7 @@ kind: AgentConfig
 metadata:
   name: {{ baremetal_cluster_name }}
 rendezvousIP: {{ openshift_install_nodes[0].ipaddr }}
-{% if  openshift_install_platform|default('baremetal') != 'none' %}
+{% if openshift_install_platform|default('baremetal') != 'none' %}
 hosts:
 {% for node in openshift_install_nodes %}
   - hostname: {{ node.name }}
