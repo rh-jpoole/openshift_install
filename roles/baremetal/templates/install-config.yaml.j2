@@ -27,6 +27,7 @@ platform:
     hosts:
 {% for node in openshift_install_nodes %}
         - name: {{ node.name }}
+          role: {{ node.role | default('master') }}
           bmc:
             username: {{ node.bmc_username }}
             password: {{ node.bmc_password | default(baremetal_bmc_password) }}
