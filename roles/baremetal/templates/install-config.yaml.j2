@@ -24,16 +24,7 @@ platform:
       - {{ baremetal_api_vip }}
     ingressVIPs:
       - {{ baremetal_ingress_vip }}
-    hosts:
-{% for node in openshift_install_nodes %}
-        - name: {{ node.name }}
-          role: {{ node.role | default('master') }}
-          bmc:
-            username: {{ node.bmc_username }}
-            password: {{ node.bmc_password | default(baremetal_bmc_password) }}
-            address: redfish+https://{{ node.bmc_address }}/redfish/v1/Systems/{{ node.bmc_resource_id | default(omit) }}
-            disableCertificateVerification: true
-{% endfor %}
+{% endif %}
 {% else %}
   none: {}
 {% endif %}
