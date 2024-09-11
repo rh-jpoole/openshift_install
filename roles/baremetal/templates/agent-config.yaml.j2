@@ -9,7 +9,7 @@ hosts:
   - hostname: {{ node.name }}
     role: {{ node.role | default('master') }}
     bmc:
-      address: redfish+https://{{ node.bmc_address }}/redfish/v1/Systems/
+      address: redfish+https://{{ node.bmc_address }}/redfish/v1/Systems/{{ node.bmc_resource_id | default(omit) }}
       username: {{ node.bmc_username }}
       password: {{ node.bmc_password | default(baremetal_bmc_password) }}
       disableCertificateVerification: true
