@@ -36,6 +36,10 @@
         __master_nodes_len: "{{ openshift_install_nodes | machacekondra.openshift_install.master_nodes_len }}"
         __worker_nodes_len: "{{ openshift_install_nodes | machacekondra.openshift_install.worker_nodes_len }}"
 
+    - name: Baremetal | Check for openshift_render_config only flag
+      ansible.builtin.meta: end_play
+      when: "{{ openshift_render_config }}"
+
     - name: Baremetal | Create ISO image
       ansible.builtin.command: "{{ baremetal_install_binary }} agent create image --dir={{ baremetal_cluster_home_dir }}"
       environment:
