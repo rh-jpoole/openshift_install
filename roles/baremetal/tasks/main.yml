@@ -39,7 +39,7 @@
     - name: Baremetal | Copy extra configuration files
       ansible.builtin.copy:
         src: "{{ item.source_dir }}/"
-        dest: "{{ baremetal_cluster_home_dir }}/{{ item.dest_dir }}"
+        dest: "{{ baremetal_cluster_home_dir }}/{{ item.dest_dir }}/"
       loop: "{{ openshift_install_extra_configs }}"
       when: openshift_install_extra_configs is defined
 
