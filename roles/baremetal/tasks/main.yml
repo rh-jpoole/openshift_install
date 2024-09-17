@@ -43,9 +43,9 @@
       loop: "{{ openshift_install_extra_configs }}"
       when: openshift_install_extra_configs is defined
 
-    - name: Baremetal | Check for openshift_render_config only flag
+    - name: Baremetal | Check for openshift_just_render_config flag
       ansible.builtin.meta: end_play
-      when: openshift_render_config
+      when: openshift_just_render_config
 
     - name: Baremetal | Create ISO image
       ansible.builtin.command: "{{ baremetal_install_binary }} agent create image --dir={{ baremetal_cluster_home_dir }}"
@@ -77,18 +77,18 @@
       - "{{ baremetal_cluster_home_dir }}:/usr/local/apache2/htdocs/:Z"
     tty: true
 
-- name: Baremetal | Boot ISOs
-  ansible.builtin.include_tasks: "boot_iso.yml"
-  loop: "{{ openshift_install_nodes }}"
-  when:
-    - (item.kubevirt is not defined or not item.kubevirt)
-
 - name: OCP Virt | Boot VMs
   ansible.builtin.include_tasks: "boot_vms.yml"
   loop: "{{ openshift_install_nodes }}"
   when:
     - item.kubevirt is defined
     - item.kubevirt is mapping
+
+- name: Baremetal | Boot ISOs
+  ansible.builtin.include_tasks: "boot_iso.yml"
+  loop: "{{ openshift_install_nodes }}"
+  when:
+    - (item.kubevirt is not defined or not item.kubevirt)
 
 - name: Baremetal | Wait for install
   ansible.builtin.command: "{{ baremetal_install_binary }} agent wait-for install-complete --dir={{ baremetal_cluster_home_dir }}"
